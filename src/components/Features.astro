@@ -1,0 +1,86 @@
+---
+const templates = [
+  { id: 1, title: "baju 1", image: "src/images/1.jpg" },
+  { id: 2, title: "Fishing Life", image: "src/images/2.jpg" },
+  { id: 3, title: "Black Raven", image: "src/images/3.jpg" },
+  { id: 4, title: "Love Yourself", image: "src/images/4.jpg" },
+  { id: 5, title: "Forest Vibes", image: "src/images/5.jpg" },
+  { id: 6, title: "Heart Music", image: "src/images/7.jpg" },
+  { id: 7, title: "Heart Music", image: "src/images/8.jpg" },
+  { id: 8, title: "Heart Music", image: "src/images/9.jpg" },
+  { id: 9, title: "Heart Music", image: "src/images/10.jpg" },
+  { id: 10, title: "Heart Music", image: "src/images/11.jpg" },
+  { id: 11, title: "Heart Music", image: "src/images/12.jpg" },
+  { id: 12, title: "Heart Music", image: "src/images/13.jpg" },
+];
+---
+
+<style>
+  .masonry-item {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .masonry-item:hover {
+    transform: translateY(-5px);
+  }
+
+  .image-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.7) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .masonry-item:hover .image-wrapper::before {
+    opacity: 1;
+  }
+
+  .title-overlay {
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .masonry-item:hover .title-overlay {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .columns-container {
+    gap: 0.5rem !important; /* Jarak horizontal */
+  }
+</style>
+
+<section class="py-20 bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-4xl font-light text-center text-gray-800 dark:text-gray-100 mb-16">
+      Elegant Collection
+    </h2>
+
+    <!-- Perkecil gap dan space-y -->
+    <div class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+      {templates.map((item) => (
+        <div class="masonry-item break-inside-avoid relative group">
+          <div class="image-wrapper rounded-xl overflow-hidden shadow-lg hover:shadow-2xl relative mx-2"> <!-- Tambahkan margin horizontal -->
+            <img
+              src={item.image}
+              alt={item.title}
+              class="w-full h-auto object-cover"
+              loading="lazy"
+              style="max-height: 300px;" 
+            />
+            <div class="title-overlay absolute bottom-0 left-0 right-0 p-4"> <!-- Perkecil padding -->
+              <h3 class="text-white text-base font-medium tracking-wide"> <!-- Perkecil ukuran teks -->
+                {item.title}
+              </h3>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
