@@ -55,17 +55,19 @@ const templates = [
   }
 </style>
 
-<section class="py-20 bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-7xl mx-auto">
+<section class="relative overflow-hidden py-20 bg-white-50 dark:bg-white-900 px-4 sm:px-6 lg:px-8">
+
+
+  <!-- Konten (taruh di bawah gradient dengan z-index lebih kecil) -->
+  <div class="relative z-10 max-w-7xl mx-auto">
     <h2 class="text-4xl font-light text-center text-gray-800 dark:text-gray-100 mb-16">
       Elegant Collection
     </h2>
 
-    <!-- Perkecil gap dan space-y -->
     <div class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
       {templates.map((item) => (
         <div class="masonry-item break-inside-avoid relative group">
-          <div class="image-wrapper rounded-xl overflow-hidden shadow-lg hover:shadow-2xl relative mx-2"> <!-- Tambahkan margin horizontal -->
+          <div class="image-wrapper rounded-xl overflow-hidden shadow-lg hover:shadow-2xl relative mx-2">
             <img
               src={item.image}
               alt={item.title}
@@ -73,8 +75,8 @@ const templates = [
               loading="lazy"
               style="max-height: 300px;" 
             />
-            <div class="title-overlay absolute bottom-0 left-0 right-0 p-4"> <!-- Perkecil padding -->
-              <h3 class="text-white text-base font-medium tracking-wide"> <!-- Perkecil ukuran teks -->
+            <div class="title-overlay absolute bottom-0 left-0 right-0 p-4">
+              <h3 class="text-white text-base font-medium tracking-wide">
                 {item.title}
               </h3>
             </div>
@@ -84,3 +86,4 @@ const templates = [
     </div>
   </div>
 </section>
+

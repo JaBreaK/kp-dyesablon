@@ -1,28 +1,33 @@
----
----
 <section class="relative pt-32 pb-20 md:pt-40 overflow-hidden hero-section">
+  <!-- Background Elements -->
+  <div class="absolute inset-0 z-0">
+    <!-- Mode Terang -->
+    <div class="absolute inset-0 bg-[url('https://drive.google.com/thumbnail?id=1Lw9ckNTY1yQsmbY7fLRahG7jApkFOFcX&sz=w2000')] bg-cover bg-center dark:hidden"></div>
+
+    <!-- Mode Gelap -->
+    <div class="absolute inset-0 bg-[url('https://drive.google.com/thumbnail?id=1RJHY-RzbWT9KNLmiz99UMlPntN_CEGPh&sz=w2000')] bg-cover bg-center hidden dark:block"></div>
+  </div>
+
   <div class="container-custom relative z-10">
-    <!-- Ganti grid dengan flex column, center semua konten -->
-    <div class="flex flex-col items-center text-center gap-12">
+    <div class="flex flex-col items-start text-left gap-12">
       <div class="slide-up" transition:animate="slide">
-        <!-- Perbesar teks dan center -->
-        <h1 class="mb-6 text-secondary-900 dark:text-white leading-tight text-6xl md:text-8xl font-bold md:transform md:scale-150">
-          <span class="text-primary-600 dark:text-primary-400">DYE</span> Sablon 
+        <h1 class="mb-6 leading-tight text-6xl md:text-8xl font-bold">
+          <span class="font-brand1 text-[#D4AF37]">DYE</span>
+          <span class="font-display text-black dark:text-white">
+            SABLON
+          </span>
         </h1>
-        
-        
-        <p class="w-full max-w-lg mx-auto text-xl text-secondary-600 dark:text-secondary-300 mb-8">
-          kata kata hari ini.
+
+        <p class="w-full max-w-lg text-xl text-secondary-900 dark:text-white mb-8">
+          Custom Tanpa Batas 
         </p>
-        <div class="flex flex-wrap justify-center">
-          <a href="/tentangkami" class="btn-outline flex items-center">
-            Gass
+
+        <div class="flex flex-wrap">
+          <a href="/tentangkami" class="btn-outline text-secondary-900 dark:text-white flex items-center hover:bg-[#D4AF37]/10">
+            Custom Sekarang
           </a>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-
-

@@ -53,6 +53,9 @@
 
   --font-sans: Inter, system-ui, sans-serif;
   --font-display: Lexend, system-ui, sans-serif;
+  --font-brand: 'Playfair Display', serif;
+  --font-brand1: 'Cinzel', serif;
+  --font-family: "Quintessential", serif;
 
   --animate-fade-in: fadeIn 0.5s ease-in-out;
   --animate-slide-up: slideUp 0.5s ease-in-out;
