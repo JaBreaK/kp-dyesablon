@@ -7,14 +7,83 @@
       <!-- <img src="https://drive.google.com/thumbnail?id=1qQkls5SW8zdMf8aQ0LVSGc62GxS_ChOq&sz=w2000" alt="DYE Sablon" class="h-8 w-auto">
       <span class="ml-2 text-xl font-family font-semibold text-secondary-900 dark:text-[#D4AF37]">DYE | Sablon</span> -->
       <span class="sitename ml-2 text-xl font-brand1 font-semibold text-[#D4AF37]">DYE |</span>
-      <span class="ml-2 text-xl font-brand font-semibold text-secondary-900s">Sablon</span>
+      <span class="ml-2 text-xl font-brand font-semibold text-secondary-900s">APPAREL</span>
     </a>
     
     <nav class="hidden md:flex items-center ml-auto space-x-8">
-      <a href="/" class="text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">Home</a>
-      <a href="/kategori" class="text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">Kategori</a>
-      <a href="/tentangkami" class="text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">Tentang Kami</a>   
+     
+      <!-- Dropdown container -->
+      <div class="relative group">
+        <!-- Trigger link -->
+        <a href="/kategori" class="flex items-center text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">
+          Sublimasi
+          <!-- Ikon panah kecil -->
+          <svg class="w-4 h-4 ml-1 transform group-hover:-rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <!-- Dropdown menu -->
+        <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+          <a href="/kategori?category=jersey-sepeda,jersey-badminton,jersey-football" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Jersey</a>
+          <a href="/kategori?category=lanyard" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Lanyard</a>
+          <a href="/kategori?category=batik" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Batik</a>
+          <a href="/kategori?category=spanduk" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Spanduk</a>
+        </div>
+      </div>
+      <div class="relative group">
+        <!-- Trigger link -->
+        <a href="/kategori" class="flex items-center text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">
+          Sablon
+          <!-- Ikon panah kecil -->
+          <svg class="w-4 h-4 ml-1 transform group-hover:-rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <!-- Dropdown menu -->
+        <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+          <a href="/kategori?category=sablon-kaos" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Kaos</a>
+          <a href="/kategori?category=dtf" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">DTF</a>
+          <a href="/kategori?category=plastisol" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Plastisol</a>
+      
+        </div>
+      </div>
+      <div class="relative group">
+        <!-- Trigger link -->
+        <a href="/kategori" class="flex items-center text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">
+          Jahit
+          <!-- Ikon panah kecil -->
+          <svg class="w-4 h-4 ml-1 transform group-hover:-rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <!-- Dropdown menu -->
+        <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+          <a href="/kategori?category=jahit-kaos" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Kaos</a>
+          <a href="/kategori?category=hoodie" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Hoodie</a>
+          <a href="/kategori?category=kemeja" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Kemeja</a>
+          <a href="/kategori?category=seragam" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Seragam</a>
+          <a href="/kategori?category=jaket" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Jaket</a>
+        </div>
+      </div>
+      <div class="relative group">
+        <!-- Trigger link -->
+        <a href="/kategori" class="flex items-center text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">
+          Jasa Cetak
+          <!-- Ikon panah kecil -->
+          <svg class="w-4 h-4 ml-1 transform group-hover:-rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <!-- Dropdown menu -->
+        <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+          <a href="/kategori?category=dtf-motoran" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Cetak DTF</a>
+          <a href="/kategori?category=motoran" onclick="window.location.href=this.href; return false;" class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Print </a>
+        </div>
+      </div>
+    
+      <a href="/tentangkami" class="text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">Tentang Kami</a>
     </nav>
+    
     
     <div class="flex items-center space-x-4">
       <button 
@@ -32,40 +101,132 @@
       
       
       
-      <!-- Mobile Menu Button and Dropdown -->
-      <div x-data="{ open: false, showAllPages: false }">
-        <button 
-          @click="open = !open"
-          class="md:hidden p-2 rounded-md text-secondary-600 hover:text-secondary-900 dark:text-secondary-300 dark:hover:text-white focus:outline-hidden focus:ring-2 focus:ring-primary-500"
-          aria-label="Toggle menu"
-        >
-          <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+    <!-- Mobile Menu Button and Dropdown -->
+    <div x-data="{ open: false, showSublimasi: false, showSablon: false, showJahit: false, showDtfmotoran: false }" class="relative">
+      <!-- tombol hamburger -->
+      <button 
+        @click="open = !open"
+        class="md:hidden p-2 rounded-md text-secondary-600 hover:text-secondary-900 dark:text-secondary-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+        aria-label="Toggle menu"
+      >
+        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <!-- dropdown mobile -->
+      <div 
+        x-show="open" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="absolute top-12 right-0 w-56 py-2 bg-white dark:bg-secondary-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+        x-cloak
+      >
+        <a href="/" class="block px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800">Home</a>
         
-        <div 
-          x-show="open" 
-          x-transition:enter="transition ease-out duration-200"
-          x-transition:enter-start="opacity-0 scale-95"
-          x-transition:enter-end="opacity-100 scale-100"
-          x-transition:leave="transition ease-in duration-150"
-          x-transition:leave-start="opacity-100 scale-100"
-          x-transition:leave-end="opacity-0 scale-95"
-          class="absolute top-16 right-4 w-48 py-2 bg-white dark:bg-secondary-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-hidden"
-          x-cloak
-        >
-          <a href="/" class="block px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800">Home</a>
-          <a href="/kategori" class="block px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800">Kategori</a>
-          <a href="/tentangkami" class="block px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800">Tetang Kami</a>  
-
-          
-
+        <!-- Printing Sublimasi with submenu toggle -->
+        <div class="border-t border-gray-100 dark:border-gray-700">
+          <button
+            @click="showSublimasi = !showSublimasi"
+            class="w-full flex items-center justify-between px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 focus:outline-none"
+            aria-expanded="false"
+          >
+            Sublimasi
+            <svg :class="showSublimasi ? 'transform rotate-180' : ''" class="h-4 w-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="showSublimasi" 
+            x-transition 
+            class="space-y-1 bg-gray-50 dark:bg-secondary-800"
+            x-cloak
+          >
+            <a href="/kategori?category=jersey-sepeda,jersey-badminton,jersey-football" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Jersey</a>
+            <a href="/kategori?category=lanyard" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Lanyard</a>
+            <a href="/kategori?category=batik" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Batik</a>
+            <a href="/kategori?category=spanduk" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Spanduk</a>
+          </div>
         </div>
-      </div>
+        <div class="border-t border-gray-100 dark:border-gray-700">
+          <button
+            @click="showSablon = !showSablon"
+            class="w-full flex items-center justify-between px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 focus:outline-none"
+            aria-expanded="false"
+          >
+            Sablon
+            <svg :class="showsablon ? 'transform rotate-180' : ''" class="h-4 w-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="showSablon" 
+            x-transition 
+            class="space-y-1 bg-gray-50 dark:bg-secondary-800"
+            x-cloak
+          >
+            <a href="/kategori?category=sablon-kaos" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Kaos</a>
+            <a href="/kategori?category=dtf" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">DTF</a>
+            <a href="/kategori?category=plastisol" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Plastisol</a>
+           </div>
+        </div>
+        <div class="border-t border-gray-100 dark:border-gray-700">
+          <button
+            @click="showJahit = !showJahit"
+            class="w-full flex items-center justify-between px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 focus:outline-none"
+            aria-expanded="false"
+          >
+            Jahit
+            <svg :class="showJahit ? 'transform rotate-180' : ''" class="h-4 w-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="showJahit" 
+            x-transition 
+            class="space-y-1 bg-gray-50 dark:bg-secondary-800"
+            x-cloak
+          >
+            <a href="/kategori?category=jahit-kaos" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Kaos</a>
+            <a href="/kategori?category=hoodie" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Hoodie</a>
+            <a href="/kategori?category=kemeja" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Kemeja</a>
+            <a href="/kategori?category=seragam" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Seragam</a>
+            <a href="/kategori?category=jaket" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Jaket</a>
+          </div>
+        </div>
+        <div class="border-t border-gray-100 dark:border-gray-700">
+          <button
+            @click="showDtfmotoran = !showDtfmotoran"
+            class="w-full flex items-center justify-between px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 focus:outline-none"
+            aria-expanded="false"
+          >
+            Jasa Cetak
+            <svg :class="showDtfmotoran ? 'transform rotate-180' : ''" class="h-4 w-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="showDtfmotoran" 
+            x-transition 
+            class="space-y-1 bg-gray-50 dark:bg-secondary-800"
+            x-cloak
+          >
+            <a href="/kategori?category=motoran" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Cetak DTF</a>
+            <a href="/kategori?category=motoran" onclick="window.location.href=this.href; return false;" class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Print </a>
+
+           </div>
+        </div>
+
+        <a href="/tentangkami" class="block px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800">Tentang Kami</a>
+    </div>
+
     </div>
   </div>
 </header>

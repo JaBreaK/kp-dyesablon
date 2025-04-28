@@ -1,84 +1,64 @@
 ---
 const templates = [
-  { id: 1, title: "baju 1", image: "https://lh3.googleusercontent.com/d/1UNyyYWNKRP2yZS_qxGqiyxcJzlVMO9nm=w2000?authuser=0" },
-  { id: 2, title: "Fishing Life", image: "https://lh3.googleusercontent.com/d/1YTefUc8_06SXSVNKAjQnlard3szhyaeL=w2000?authuser=0" },
-  { id: 3, title: "Black Raven", image: "https://lh3.googleusercontent.com/d/1pVtfmR-RO3X2VaODNPOFp4WDKl-MX1cy=w2000?authuser=0" },
-  { id: 4, title: "Love Yourself", image: "https://lh3.googleusercontent.com/d/1eDK8eQFwtRwamY0Uags3TbuJZRqtDeLC=w2000?authuser=0" },
-  { id: 5, title: "Forest Vibes", image: "https://lh3.googleusercontent.com/d/1QuLZANPHKYGVOOHqEh3vFA4r-rWdfvr4=w2000?authuser=0" },
-  { id: 6, title: "Heart Music", image: "https://lh3.googleusercontent.com/d/15_485mQs3nT-6WnVu-aMH_1QDi7XaOv9=w2000?authuser=0" },
-  { id: 7, title: "Heart Music", image: "https://lh3.googleusercontent.com/d/10wQiqj03MEmyqwnO6jrDverlchJGyq7i=w2000?authuser=0" },
+  { id: 1, title: "baju 1",       image: "https://lh3.googleusercontent.com/d/1TK_5v4GHO71bGTdJfEn4wkDIsoI__c-L=w2000?authuser=0" },
+  { id: 2, title: "Fishing Life", image: "https://lh3.googleusercontent.com/d/1pVtfmR-RO3X2VaODNPOFp4WDKl-MX1cy=w2000?authuser=0" },
+  { id: 3, title: "Black Raven",  image: "https://lh3.googleusercontent.com/d/1pVtfmR-RO3X2VaODNPOFp4WDKl-MX1cy=w2000?authuser=0" },
+  { id: 4, title: "Love Yourself",image: "https://lh3.googleusercontent.com/d/1eDK8eQFwtRwamY0Uags3TbuJZRqtDeLC=w2000?authuser=0" },
 ];
 ---
 
 <style>
-  .masonry-item {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .masonry-item:hover {
-    transform: translateY(-5px);
-  }
-
+  .masonry-item { transition: all .4s cubic-bezier(.4,0,.2,1); }
+  .masonry-item:hover { transform: translateY(-5px); }
+  .image-wrapper { position: relative; overflow: hidden; border-radius: .75rem; height: 100%; }
   .image-wrapper::before {
     content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: absolute; inset: 0;
     background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.7) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    opacity: 0; transition: opacity .3s ease;
   }
-
-  .masonry-item:hover .image-wrapper::before {
-    opacity: 1;
-  }
-
+  .masonry-item:hover .image-wrapper::before { opacity: 1; }
   .title-overlay {
-    transform: translateY(20px);
-    opacity: 0;
-    transition: all 0.3s ease;
+    position: absolute; bottom: 0; left: 0; right: 0;
+    transform: translateY(20px); opacity: 0; transition: all .3s ease;
+    padding: 1rem;
   }
-
-  .masonry-item:hover .title-overlay {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  .columns-container {
-    gap: 0.5rem !important; /* Jarak horizontal */
-  }
+  .masonry-item:hover .title-overlay { transform: translateY(0); opacity: 1; }
 </style>
 
-<section class="relative overflow-hidden py-20 bg-white-50 dark:bg-white-900 px-4 sm:px-6 lg:px-8">
-
-
-  <!-- Konten (taruh di bawah gradient dengan z-index lebih kecil) -->
+<section class="relative overflow-hidden py-20 bg-white dark:bg-gray-900 px-4 sm:px-6 lg:px-8">
   <div class="relative z-10 max-w-7xl mx-auto">
     <h2 class="text-4xl font-light text-center text-gray-800 dark:text-gray-100 mb-16">
       Elegant Collection
     </h2>
 
-    <div class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-      {templates.map((item) => (
-        <div class="masonry-item break-inside-avoid relative group">
-          <div class="image-wrapper rounded-xl overflow-hidden shadow-lg hover:shadow-2xl relative mx-2">
-            <img
-              src={item.image}
-              alt={item.title}
-              class="w-full h-auto object-cover"
-              loading="lazy"
-              style="max-height: 300px;" 
-            />
-            <div class="title-overlay absolute bottom-0 left-0 right-0 p-4">
-              <h3 class="text-white text-base font-medium tracking-wide">
-                {item.title}
-              </h3>
+    <!-- Grid dengan baris otomatis besar -->
+    <div class="grid grid-cols-3 auto-rows-[200px] gap-4">
+      {templates.map(item => {
+        const spanClass =
+          item.id === 1
+            ? 'row-span-2' // Gambar 1 panjang ke bawah
+            : item.id === 4
+            ? 'col-span-2' // Gambar 4 melebar ke kanan
+            : '';
+        return (
+          <div class={`masonry-item group ${spanClass} h-full`}>
+            <div class="image-wrapper shadow-lg hover:shadow-2xl">
+              <img
+                src={item.image}
+                alt={item.title}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div class="title-overlay">
+                <h3 class="text-white text-base font-medium tracking-wide">
+                  {item.title}
+                </h3>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   </div>
 </section>
-
