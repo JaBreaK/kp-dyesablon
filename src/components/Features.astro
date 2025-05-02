@@ -1,10 +1,13 @@
 ---
-const templates = [
-  { id: 1, title: "baju 1",       image: "https://lh3.googleusercontent.com/d/1TK_5v4GHO71bGTdJfEn4wkDIsoI__c-L=w2000?authuser=0" },
-  { id: 2, title: "Fishing Life", image: "https://lh3.googleusercontent.com/d/1pVtfmR-RO3X2VaODNPOFp4WDKl-MX1cy=w2000?authuser=0" },
-  { id: 3, title: "Black Raven",  image: "https://lh3.googleusercontent.com/d/1pVtfmR-RO3X2VaODNPOFp4WDKl-MX1cy=w2000?authuser=0" },
-  { id: 4, title: "Love Yourself",image: "https://lh3.googleusercontent.com/d/1eDK8eQFwtRwamY0Uags3TbuJZRqtDeLC=w2000?authuser=0" },
-];
+import { supabase } from '../lib/supabase'
+
+const { data: templates, error } = await supabase
+  .from('koleksi')
+  .select('*')
+
+if (error) {
+  console.error('Gagal ambil data:', error.message)
+}
 ---
 
 <style>
@@ -34,25 +37,25 @@ const templates = [
 
     <!-- Grid dengan baris otomatis besar -->
     <div class="grid grid-cols-3 auto-rows-[200px] gap-4">
-      {templates.map(item => {
+      {templates?.map((item, index) => {
         const spanClass =
-          item.id === 1
-            ? 'row-span-2' // Gambar 1 panjang ke bawah
-            : item.id === 4
-            ? 'col-span-2' // Gambar 4 melebar ke kanan
-            : '';
+          index === 0
+            ? 'row-span-2'
+            : index === 3
+            ? 'col-span-2'
+            : '';      
         return (
           <div class={`masonry-item group ${spanClass} h-full`}>
             <div class="image-wrapper shadow-lg hover:shadow-2xl">
               <img
-                src={item.image}
-                alt={item.title}
+                src={item.gambar}
+                alt={item.nama}
                 class="w-full h-full object-cover"
                 loading="lazy"
               />
               <div class="title-overlay">
                 <h3 class="text-white text-base font-medium tracking-wide">
-                  {item.title}
+                  {item.nama}
                 </h3>
               </div>
             </div>
