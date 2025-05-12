@@ -33,6 +33,8 @@ if (postError) {
   console.error('Gagal ambil produk:', postError.message);
 }
 
+// Kalau slug tidak ada, redirect ke 404
+
 ---
 <Layout title={`${post.title} – Dye Apparel`} description={post.desk}>
   <Header />
