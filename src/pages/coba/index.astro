@@ -1,0 +1,31 @@
+---
+import { supabase } from '../../lib/supabase.js'
+
+let message = ''
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData()
+  const file = formData.get('file')
+
+  if (file && file instanceof File) { // Memastikan file adalah instance dari File
+    const { data, error } = await supabase.storage
+      .from('nama-bucket') // ganti dengan nama bucket Supabase kamu
+      .upload(`public/${file.name}`, file)
+
+    message = error ? 'Upload gagal!' : 'Upload berhasil!'
+  } else {
+    message = 'File tidak ditemukan!'
+  }
+}
+---
+
+<html>
+  <body>
+    <h1>Upload Gambar</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="file" name="file" />
+      <button type="submit">Upload</button>
+    </form>
+    <p>{message}</p>
+  </body>
+</html>

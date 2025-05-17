@@ -97,49 +97,66 @@ const categories = kategoriData
   <Footer />
 
   <!-- Script: manual filter trigger -->
-  <script is:inline>
+  <script is:inline type="module">
     const form = document.getElementById('category-filter-form');
     const applyBtn = document.getElementById('apply-filter-btn');
     const resetBtn = document.getElementById('reset-filter-btn');
-
-    // Apply filter by reloading page with query params
-    applyBtn.addEventListener('click', e => {
-      e.preventDefault();
-      const checked = Array.from(form.elements['category']).filter(i => i.checked).map(i => i.value);
-      const url = window.location.pathname + (checked.length ? '?category=' + checked.join(',') : '');
-      window.location.href = url;
-    });
-
-    // Reset filter by reloading page without params
-    resetBtn.addEventListener('click', e => {
-      e.preventDefault();
-      window.location.href = window.location.pathname;
-    });
-
-    // On page load, filter products based on URL
-    document.addEventListener('DOMContentLoaded', () => {
-      const cards = document.querySelectorAll('.card');
+    const cards = document.querySelectorAll('.card');
+  
+    // Ambil array kategori aktif dari URL
+    function getActiveFromURL() {
       const params = new URLSearchParams(window.location.search);
-      const catParam = params.get('category');
-      const active = catParam ? catParam.split(',') : [];
+      return params.has('category')
+        ? params.get('category').split(',').map(s => s.trim())
+        : [];
+    }
+  
+    // Sinkronkan checkbox dengan array kategori aktif
+    function applyActiveToForm(active) {
+      form.querySelectorAll('input[name="category"]').forEach(input => {
+        input.checked = active.includes(input.value);
+      });
+    }
+  
+    // Filter kartu berdasarkan checkbox
+    function filterCards() {
+      const checked = Array.from(form.elements['category'])
+        .filter(i => i.checked)
+        .map(i => i.value);
+  
       cards.forEach(card => {
         const cats = card.dataset.categories.split(' ');
-        card.style.display = !active.length || active.some(c => cats.includes(c)) ? 'block' : 'none';
+        card.style.display = (!checked.length || checked.some(c => cats.includes(c)))
+          ? 'block'
+          : 'none';
       });
+  
+      // Update URL tanpa reload
+      const newParam = checked.length ? `?category=${checked.join(',')}` : '';
+      history.replaceState(null, '', window.location.pathname + newParam);
+    }
+  
+    // Event Apply
+    applyBtn.addEventListener('click', e => {
+      e.preventDefault();
+      filterCards();
     });
-
-        // Initialize filter from URL on load
-      window.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
-      const catParam = params.get('category');
-      if (catParam) {
-        // pre-check based on URL
-        catParam.split(',').forEach(slug => {
-          const input = document.getElementById(slug.trim());
-          if (input) input.checked = true;
-        });
-        applyFilter();
-      }
+  
+    // Event Reset
+    resetBtn.addEventListener('click', e => {
+      e.preventDefault();
+      form.querySelectorAll('input[name="category"]').forEach(i => i.checked = false);
+      filterCards();
+    });
+  
+    // Inisialisasi on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const active = getActiveFromURL();
+      applyActiveToForm(active);
+      filterCards();
     });
   </script>
+  
+  
+  
 </Layout>
