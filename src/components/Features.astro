@@ -38,32 +38,38 @@ if (error) {
 
     <!-- Grid dengan baris otomatis besar -->
     <div class="grid grid-cols-3 auto-rows-[200px] gap-4">
-      {templates?.map((item, index) => {
-        const spanClass =
-          index === 0
-            ? 'row-span-2'
-            : index === 3
-            ? 'col-span-2'
-            : '';      
-        return (
-          <div class={`masonry-item group ${spanClass} h-full`}>
-            <div class="image-wrapper shadow-lg hover:shadow-2xl">
-              <img
-                src={item.gambar}
-                alt={item.nama}
-                class="w-full h-full object-cover"
-                loading="lazy"
-              />
-              <div class="title-overlay">
-                <h3 class="text-white text-base font-medium tracking-wide">
-                  {item.nama}
-                </h3>
-              </div>
+  {templates?.map((item, index) => {
+    const spanClass =
+      index === 0
+        ? 'row-span-2'
+        : index === 3
+        ? 'col-span-2'
+        : '';      
+    return (
+      <div key={item.id} class={`masonry-item group ${spanClass} h-full`}>
+        <a 
+          href={`/koleksi/${item.id}`} 
+          class="block h-full"
+        >
+          <div class="image-wrapper shadow-lg hover:shadow-2xl">
+            <img
+              src={item.gambar}
+              alt={item.nama}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            <div class="title-overlay">
+              <h3 class="text-white text-base font-medium tracking-wide">
+                {item.nama}
+              </h3>
             </div>
           </div>
-        );
-      })}
-    </div>
+        </a>
+      </div>
+    );
+  })}
+</div>
+
     <div class="mt-16 bg-linear-to-r from-primary-500 to-secondary-500 rounded-2xl p-8 md:p-12 relative overflow-hidden">
       <div class="absolute inset-0 bg-linear-to-r from-primary-600/30 to-secondary-600/30 backdrop-blur-xs"></div>
       <div class="relative z-10 text-center md:text-left md:flex items-center justify-between">
