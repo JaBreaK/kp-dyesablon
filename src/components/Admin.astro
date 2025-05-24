@@ -5,7 +5,25 @@ const categories = [
   "dtf", "plastisol", "jahit", "hoodie", "kemeja", "seragam", "jaket"
 ];
 ---
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  const supabase = createClient('https://pmfzypvynmyotmvbgafi.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM');
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) location.href = '/login';
+  });
 
+  // Tombol logout
+      const btnLogout = document.getElementById('btn-logout');
+      btnLogout.addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          alert('Logout gagal: ' + error.message);
+        } else {
+          window.location.href = '/login';
+        }
+      });
+</script>
 <!-- Tambah padding konsisten di seluruh konten -->
 <section class="p-6 md:p-" >
   <div class="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 animate-fadeIn">
@@ -21,6 +39,7 @@ const categories = [
         class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition transform hover:scale-105 shadow-md">
         Tambah Produk
       </button>
+
     </div>
 
     <!-- Produk Form -->
@@ -198,7 +217,12 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
     </div>
     <!-- Pagination Controls -->
 <div id="pagination" class="flex justify-center items-center space-x-2 mt-6"></div>
-
+          <button
+      id="btn-logout"
+      class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+    >
+      Logout
+    </button>
   </div>
 </section>
 
@@ -494,6 +518,7 @@ async function uploadImage(file) {
   // Event Listeners
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    
 
     // Validasi kategori
     const categories = getCategories();
@@ -543,6 +568,7 @@ async function uploadImage(file) {
     } catch (error) {
       alert("Terjadi kesalahan: " + error.message);
     } finally {
+      document.getElementById("cancel-btn").classList.remove("hidden");
       submitBtn.disabled = false;
       spinner.classList.add("hidden");
     }
@@ -612,3 +638,4 @@ async function uploadImage(file) {
   resetForm();
   fetchProducts();
 </script>
+
