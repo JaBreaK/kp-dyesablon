@@ -39,7 +39,7 @@ const categories = kategoriData
       <hr class="border-gray-200 dark:border-gray-700 my-4" />
       <form id="category-filter-form" class="space-y-4">
         {categories.map(cat => (
-          <details class="group">
+        <details class="group">
             <summary class="flex justify-between items-center cursor-pointer font-medium text-gray-900 dark:text-gray-100">
               {cat.name} <span class="transition-transform duration-200 group-open:rotate-180">▾</span>
             </summary>
@@ -91,6 +91,8 @@ const categories = kategoriData
           </a>
         ))}
       </div>
+       <!-- Pagination Controls -->
+  <div id="pagination" class="flex justify-center items-center space-x-2 mt-8"></div>
     </section>
   </main>
 
@@ -101,9 +103,14 @@ const categories = kategoriData
     const form = document.getElementById('category-filter-form');
     const applyBtn = document.getElementById('apply-filter-btn');
     const resetBtn = document.getElementById('reset-filter-btn');
-    const cards = document.querySelectorAll('.card');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const paginationEl = document.getElementById('pagination');
   
-    // Ambil array kategori aktif dari URL
+    // Pagination state
+    let currentPage = 1;
+    const pageSize = 9; // misal 9 kartu per halaman
+  
+    // Ambil kategori aktif dari URL
     function getActiveFromURL() {
       const params = new URLSearchParams(window.location.search);
       return params.has('category')
@@ -118,31 +125,73 @@ const categories = kategoriData
       });
     }
   
-    // Filter kartu berdasarkan checkbox
-    function filterCards() {
+    // Filter & pagination
+    function updateDisplay() {
+      // 1. hitung array yang lulus filter
       const checked = Array.from(form.elements['category'])
         .filter(i => i.checked)
         .map(i => i.value);
   
-      cards.forEach(card => {
+      const filtered = cards.filter(card => {
         const cats = card.dataset.categories.split(' ');
-        card.style.display = (!checked.length || checked.some(c => cats.includes(c)))
-          ? 'block'
-          : 'none';
+        return !checked.length || checked.some(c => cats.includes(c));
       });
   
-      // Update URL tanpa reload
+      // 2. hide all dulu
+      cards.forEach(c => (c.style.display = 'none'));
+  
+      // 3. slice utk halaman ini
+      const totalPages = Math.ceil(filtered.length / pageSize);
+      const start = (currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(start, start + pageSize);
+      pageItems.forEach(c => (c.style.display = 'block'));
+  
+      // 4. render pagination
+      renderPagination(totalPages);
+    }
+  
+    // Buat tombol Prev / 1..N / Next
+    function renderPagination(totalPages) {
+      if (totalPages <= 1) {
+        paginationEl.innerHTML = '';
+        return;
+      }
+  
+      let html = '';
+      html += `<button ${currentPage === 1 ? 'disabled class="opacity-50"' : ''} data-page="${currentPage-1}" class="px-3 py-1 rounded dark:bg-gray-700 bg-gray-200 hover:bg-gray-300">Prev</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button ${i === currentPage ? 'class="px-3 py-1 rounded bg-primary-600 text-white"' : `data-page="${i}" class="px-3 py-1 rounded dark:bg-gray-700 bg-gray-200 hover:bg-gray-300"`}>${i}</button>`;
+      }
+      html += `<button ${currentPage === totalPages ? 'disabled class="opacity-50 "' : ''} data-page="${currentPage+1}" class="px-3 dark:bg-gray-700 py-1 rounded bg-gray-200 hover:bg-gray-300">Next</button>`;
+  
+      paginationEl.innerHTML = html;
+  
+      // attach listener
+      paginationEl.querySelectorAll('button[data-page]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentPage = Number(btn.dataset.page);
+          updateDisplay();
+          // scroll ke grid
+          document.getElementById('product-grid')
+            .scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    }
+  
+    // Trigger filter + pagination
+    function filterCards(e) {
+      e?.preventDefault();
+      currentPage = 1;
+      updateDisplay();
+      // update URL tanpa reload
+      const checked = Array.from(form.elements['category'])
+        .filter(i => i.checked)
+        .map(i => i.value);
       const newParam = checked.length ? `?category=${checked.join(',')}` : '';
       history.replaceState(null, '', window.location.pathname + newParam);
     }
   
-    // Event Apply
-    applyBtn.addEventListener('click', e => {
-      e.preventDefault();
-      filterCards();
-    });
-  
-    // Event Reset
+    applyBtn.addEventListener('click', filterCards);
     resetBtn.addEventListener('click', e => {
       e.preventDefault();
       form.querySelectorAll('input[name="category"]').forEach(i => i.checked = false);
@@ -156,6 +205,7 @@ const categories = kategoriData
       filterCards();
     });
   </script>
+  
   
   
   

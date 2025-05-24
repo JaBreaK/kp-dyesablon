@@ -1,0 +1,174 @@
+---
+// src/pages/login.astro
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login</title>
+</head>
+<body>
+    <main class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="user-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <h1>STAFF LOGIN</h1>
+                <div class="decorative-line"></div>
+            </div>
+
+            <form class="login-form">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        placeholder="Enter your username"
+                        class="custom-input"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="••••••••"
+                        class="custom-input"
+                    >
+                </div>
+
+                <button type="submit" class="login-button">
+                    Sign In
+                    <span class="button-arrow">→</span>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <style>
+        /* Login Page Styling */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            transform: translateY(-5%);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-icon {
+            margin: 0 auto 1rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f8ff;
+            border-radius: 50%;
+            padding: 8px;
+        }
+
+        .login-header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .decorative-line {
+            width: 50px;
+            height: 3px;
+            background: #3498db;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            color: #34495e;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .button-arrow {
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .login-button:hover .button-arrow {
+            transform: translateX(3px);
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem;
+            }
+            .user-icon {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</body>
+</html>
