@@ -12,6 +12,13 @@ const categories = [
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) location.href = '/login';
   });
+  
+    // Sinkronisasi logout di tab lain
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+      window.location.replace('/login');
+    }
+  });
 
   // Tombol logout
       const btnLogout = document.getElementById('btn-logout');
