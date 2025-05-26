@@ -150,11 +150,11 @@ const categories = kategoriData
       function renderPagination(totalPages) {
         if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
         let html = '';
-        html += `<button ${currentPage===1?'disabled':''} data-page="${currentPage-1}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Prev</button>`;
+        html += `<button ${currentPage===1?'disabled':''} data-page="${currentPage-1}" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300">Prev</button>`;
         for (let i = 1; i <= totalPages; i++) {
-          html += `<button ${i===currentPage?'class="px-3 py-1 rounded bg-primary-600 text-white"':`data-page="${i}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"`}>${i}</button>`;
+          html += `<button ${i===currentPage?'class="px-3 py-1 rounded bg-primary-600 text-white"':`data-page="${i}" class="px-3 py-1 dark:bg-gray-800 rounded bg-gray-200 hover:bg-gray-300"`}>${i}</button>`;
         }
-        html += `<button ${currentPage===totalPages?'disabled':''} data-page="${currentPage+1}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Next</button>`;
+        html += `<button ${currentPage===totalPages?'disabled':''} data-page="${currentPage+1}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-800">Next</button>`;
         paginationEl.innerHTML = html;
         paginationEl.querySelectorAll('button[data-page]').forEach(btn => btn.addEventListener('click', () => {
           currentPage = +btn.dataset.page; applyFilter();
