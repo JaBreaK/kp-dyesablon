@@ -91,14 +91,14 @@ const categories = kategoriData
       </div>
 
       <!-- Grid Produk dengan animasi stagger -->
-      <div id="product-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      <div id="product-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 transition-opacity duration-300">
         {posts.map((post, i) => (
           <a
             href={`/produk/${post.slug}`}
             class="card block border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:scale-105 transform transition"
+            data-categories={post.categories.join(' ')}
             data-animate="fade-in-scale"
             data-delay={(i + 1) * 100}
-            data-categories={post.categories.join(' ')}
             key={post.slug}
           >
             <img src={post.image} alt={post.title} class="w-full h-48 object-cover" />
@@ -137,55 +137,58 @@ const categories = kategoriData
       obs.takeRecords();
     }
 
-    // Filter & Pagination
+    // Filter & Pagination with refresh animation
     function initFilter() {
       const form = document.getElementById('category-filter-form');
       const applyBtn = document.getElementById('apply-filter-btn');
       const resetBtn = document.getElementById('reset-filter-btn');
-      const cards = [...document.querySelectorAll('.card')];
+      const grid = document.getElementById('product-grid');
+      let cards = Array.from(grid.querySelectorAll('.card'));
       const paginationEl = document.getElementById('pagination');
       let currentPage = 1, pageSize = 9;
 
       function renderPagination(totalPages) {
         if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
         let html = '';
-        html += `<button ${currentPage===1?'disabled class="opacity-50 "':''} data-page="${currentPage-1}" class="px-3 py-1 rounded bg-white dark:bg-gray-800 hover:bg-gray-300">Prev</button>`;
-        for (let i=1; i<=totalPages; i++) {
-          html += `<button ${i===currentPage?'class="px-3 py-1 rounded bg-primary-600 text-white"':`data-page="${i}" class="px-3 py-1 rounded bg-white dark:bg-gray-800 hover:bg-gray-300"`}>${i}</button>`;
+        html += `<button ${currentPage===1?'disabled':''} data-page="${currentPage-1}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Prev</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+          html += `<button ${i===currentPage?'class="px-3 py-1 rounded bg-primary-600 text-white"':`data-page="${i}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"`}>${i}</button>`;
         }
-        html += `<button ${currentPage===totalPages?'disabled class="opacity-50"':''} data-page="${currentPage+1}" class="px-3 py-1 rounded bg-white dark:bg-gray-800 hover:bg-gray-300">Next</button>`;
+        html += `<button ${currentPage===totalPages?'disabled':''} data-page="${currentPage+1}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Next</button>`;
         paginationEl.innerHTML = html;
-        paginationEl.querySelectorAll('button[data-page]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            currentPage = +btn.dataset.page;
-            updateDisplay();
-            document.getElementById('product-grid').scrollIntoView({ behavior: 'smooth' });
-          });
-        });
+        paginationEl.querySelectorAll('button[data-page]').forEach(btn => btn.addEventListener('click', () => {
+          currentPage = +btn.dataset.page; applyFilter();
+        }));
       }
 
       function updateDisplay() {
-        const checked = Array.from(form.elements['category'])
-          .filter(i => i.checked)
-          .map(i => i.value);
-        const filtered = cards.filter(card => {
-          const cats = card.dataset.categories.split(' ');
-          return !checked.length || checked.some(c => cats.includes(c));
-        });
+        const checked = Array.from(form.elements['category']).filter(i => i.checked).map(i => i.value);
+        let filtered = cards.filter(c => !checked.length || c.dataset.categories.split(' ').some(cat => checked.includes(cat)));
         cards.forEach(c => c.style.display = 'none');
         const totalPages = Math.ceil(filtered.length / pageSize);
         const start = (currentPage - 1) * pageSize;
-        filtered.slice(start, start + pageSize).forEach(c => c.style.display = 'block');
+        filtered.slice(start, start + pageSize).forEach((c, idx) => {
+          c.style.display = 'block';
+          c.dataset.animate = 'fade-in-scale';
+          c.dataset.delay = `${idx * 100}`;
+        });
         renderPagination(totalPages);
+        initScrollAnimations();
+      }
+
+      function applyFilter() {
+        grid.classList.add('opacity-0');
+        grid.addEventListener('transitionend', function handler() {
+          grid.removeEventListener('transitionend', handler);
+          updateDisplay();
+          requestAnimationFrame(() => grid.classList.remove('opacity-0'));
+        });
       }
 
       applyBtn.addEventListener('click', () => {
         currentPage = 1;
-        updateDisplay();
-        const params = Array.from(form.elements['category'])
-          .filter(i => i.checked)
-          .map(i => i.value)
-          .join(',');
+        applyFilter();
+        const params = Array.from(form.elements['category']).filter(i => i.checked).map(i => i.value).join(',');
         history.replaceState(null, '', window.location.pathname + (params ? `?category=${params}` : ''));
       });
 
@@ -199,8 +202,7 @@ const categories = kategoriData
       const params = new URLSearchParams(window.location.search);
       const arr = params.get('category')?.split(',') || [];
       document.querySelectorAll('input[name="category"]').forEach(i => i.checked = arr.includes(i.value));
-
-      updateDisplay();
+      applyFilter();
     }
 
     document.addEventListener('astro:page-load', () => {
