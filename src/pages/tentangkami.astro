@@ -9,14 +9,15 @@ import HeroSection from '../components/HeroSection.astro';
   <Header />
   <main>
     <HeroSection 
+    
       title="Tentang Kami" 
       highlightText="Kami"
       description="Kami menyediakan layanan desain pakaian custom berkualitas tinggi untuk kaos, hoodie, jaket, dan berbagai jenis pakaian lainnya."
     />
     
-    <section class="py-16 bg-white dark:bg-gray-800">
+    <section  class="py-16 bg-white dark:bg-gray-800">
       <div class="container-custom">
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-24">
+        <div data-animate="fade-up" data-delay="100" class="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
             <span class="inline-block px-4 py-1 rounded-full bg-secondary-100 dark:bg-secondary-900 text-secondary-600 dark:text-secondary-300 font-medium text-sm mb-4">
               Our Story
@@ -35,7 +36,7 @@ import HeroSection from '../components/HeroSection.astro';
           </div>
         </div>
 
-        <div class="mb-24">
+        <div data-animate="fade-up" data-delay="200" class="mb-24">
   <div class="text-center mb-8">
     <span class="inline-block px-4 py-1 rounded-full bg-secondary-100 dark:bg-secondary-900 text-secondary-600 dark:text-secondary-300 font-medium text-sm mb-4">
       Lokasi Kami
@@ -56,12 +57,12 @@ import HeroSection from '../components/HeroSection.astro';
       referrerpolicy="no-referrer-when-downgrade"
     ></iframe>
   </div>
-</div>
+        </div>
 
         
 
         
-        <div class="mb-24">
+        <div data-animate="fade-up" data-delay="300" class="mb-24">
           <div class="text-center mb-12">
             <span class="inline-block px-4 py-1 rounded-full bg-secondary-100 dark:bg-secondary-900 text-secondary-600 dark:text-secondary-300 font-medium text-sm mb-4">
               Leadership Team

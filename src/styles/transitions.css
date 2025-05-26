@@ -98,3 +98,53 @@ footer {
   transform: translateX(100%);
   transition: transform 0.5s ease-in;
 } 
+
+/* ===== Scroll-triggered Animations ===== */
+
+/* Awalnya sembunyikan semua elemen yang punya data-animate */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Ketika sudah diberi class .animated, biarkan animasi berjalan sepenuhnya */
+.animated {
+  animation-fill-mode: both;
+}
+
+/* Definisi animasi fade-up */
+.fade-up {
+  animation-name: fadeUp;
+  animation-duration: 600ms;
+  animation-timing-function: ease-out;
+}
+
+/* Keyframes untuk fade-up */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animasi baru: fade + slide up + scale */
+.fade-in-scale {
+  animation-name: fadeInScale;
+  animation-duration: 500ms;
+  animation-timing-function: ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
