@@ -1,21 +1,15 @@
 ---
 //ini di isi juga
-const categories = [
-  "sublimasi", "jersey", "lanyard", "spanduk", "sablon", "kaos",
-  "dtf", "plastisol", "jahit", "hoodie", "kemeja", "seragam", "jaket"
-];
 ---
 
 <!-- Tambah padding konsisten di seluruh konten -->
-<section class="p-6 md:p-10" >
+<section class="p-6 md:p-10">
   <div
     class="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 animate-fadeIn"
-
   >
     <h1
-      class="text-4xl font-extrabold mb-8 bg-gradient-to-r from-[#D4AF37] bg-clip-text text-transparent"
-          id="coba"
->
+      class="text-4xl font-extrabold mb-8 bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent"
+    >
       Manajemen Produk
     </h1>
 
@@ -23,7 +17,7 @@ const categories = [
     <!-- Tambah glassmorphism untuk form -->
     <form
       id="product-form"
-      class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 rounded-xl p-6 shadow-lg opacity-0 -translate-y-4 transition-all duration-300 hover:shadow-xl"
+      class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-xl"
     >
       <input type="hidden" id="product-id" />
       <input type="hidden" id="existing-image-url" />
@@ -52,21 +46,216 @@ hover:border-primary-400 shadow-sm"
           >Kategori</label
         >
         <div id="categories" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 border rounded-lg p-3 bg-white dark:bg-gray-700">
-          {categories.map((category) => (
-            <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
-              <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
-                <input type="checkbox" value={category} class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
-                <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </span>
-            </label>
-          ))}
+          <!-- Contoh item kategori dengan animasi -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input type="checkbox" value="sublimasi" class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">
+              Sublimasi
+            </span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="jersey"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Jersey</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="lanyard"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Lanyard</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="spanduk"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Spanduk</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="sablon"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Sablon</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="kaos"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Kaos</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="dtf"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">DTF</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="plastisol"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Plastisol</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="jahit"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Jahit</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="hoodie"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Hoodie</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="kemeja"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Kemeja</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="seragam"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Seragam</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="jaket"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Jaket</span>
+          </label>
+          <!-- Tambah animasi bounce saat hover -->
+          <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+            <!-- Custom Checkbox -->
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
+              <input
+              type="checkbox"
+              value="plastisol"
+              class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
+              <!-- Checkmark Icon -->
+              <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">Plastisol</span>
+          </label>
         </div>
-        
         <p id="category-error" class="text-red-500 text-sm mt-1 hidden">
           Pilih minimal satu kategori!
         </p>
@@ -138,7 +327,7 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
         <button
           type="button"
           id="cancel-btn"
-          class=" px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg transition-colors"
+          class="hidden px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg transition-colors"
           >Batal</button
         >
         <button
@@ -173,17 +362,26 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
       </div>
     </form>
 
-        <!-- Tombol Tambah Produk -->
-        <div class="flex justify-end mb-4">
-          <button id="add-btn" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">
-            Tambah Produk
-          </button>
-        </div>
-
     <!-- Produk Table -->
-    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
-      <!-- Card akan di-inject via JS -->
-    </div>
+    <!-- Produk Table -->
+    <!-- Produk Table -->
+<!-- Produk Table -->
+<div class="overflow-x-auto rounded-lg shadow mt-8">
+  <table class="min-w-full bg-white dark:bg-gray-800 table-auto border-collapse">
+    <thead class="bg-gradient-to-r from-primary-600 to-purple-600 text-white">
+      <tr>
+        <th class="px-6 py-4 text-left text-sm font-bold tracking-wider">Judul</th>
+        <th class="px-6 py-4 text-left text-sm font-bold tracking-wider">Kategori</th>
+        <th class="px-6 py-4 text-left text-sm font-bold tracking-wider">Gambar</th>
+        <th class="px-6 py-4 text-left text-sm font-bold tracking-wider">Deskripsi</th>
+        <th class="px-6 py-4 text-center text-sm font-bold tracking-wider">Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="products-table" class="divide-y divide-gray-200 dark:divide-gray-700">
+      <!-- Isi akan di-generate dari JavaScript -->
+    </tbody>
+  </table>
+</div>
   </div>
 </section>
 
@@ -196,30 +394,6 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
   const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM";
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const formEl = document.getElementById("product-form");
-  const addBtn = document.getElementById("add-btn");
-
-  function showForm() {
-    formEl.classList.remove("hidden");
-    // Delay untuk trigger transition
-    requestAnimationFrame(() => {
-      formEl.classList.remove("opacity-0", "-translate-y-4");
-      formEl.classList.add("opacity-100", "translate-y-0");
-    });
-  }
-
-  // Fungsi menyembunyikan form dengan animasi fade-out/up
-  function hideForm() {
-    formEl.classList.remove("opacity-100", "translate-y-0");
-    formEl.classList.add("opacity-0", "-translate-y-4");
-    formEl.addEventListener(
-      "transitionend",
-      () => formEl.classList.add("hidden"),
-      { once: true }
-    );
-  }
-
-  
 
   // Quill init
   const quill = new Quill("#editor", {
@@ -234,16 +408,7 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
         ["clean"],
       ],
     },
-    
   });
-  addBtn.addEventListener("click", () => {
-  resetForm();
-  showForm();
-  document.getElementById("cancel-btn").classList.remove("hidden"); // Tambahin ini
-  formEl.scrollIntoView({ behavior: "smooth", block: "center" });
-});
-
-  
   // Contoh alert sukses dengan animasi
   function showNotification(message) {
     const alert = document.createElement("div");
@@ -295,26 +460,21 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
         .select("*")
         .order("title", { ascending: true });
       if (error) throw error;
-
-      const grid = document.getElementById("products-grid");
-      grid.innerHTML = data
+      const tbody = document.getElementById("products-table");
+      tbody.innerHTML = data
         .map(
           (p) => `
-<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 flex flex-col justify-between transition hover:shadow-xl h-full">
-  <img src="${p.image}" alt="${p.title}" class="rounded-xl w-full h-40 object-cover mb-3" loading="lazy" />
-
-  <div class="flex-1">
-    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-1 truncate">${p.title}</h3>
-    <p class="text-sm text-gray-600 dark:text-gray-400 capitalize">Kategori: ${p.categories.join(", ")}</p>
-  </div>
-
-  <div class="mt-4 flex items-center justify-between text-sm font-medium">
-    <button data-id="${p.id}" class="edit-btn text-primary-600 hover:underline">Edit</button>
-    <button data-id="${p.id}" class="delete-btn text-red-500 hover:underline">Hapus</button>
-  </div>
-</div>
-
-        `
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <td class="px-4 py-3 text-gray-700 dark:text-gray-300">${p.title}</td>
+          <td class="px-4 py-3">${p.categories.join(", ")}</td>
+          <td class="px-4 py-3"><img src="${p.image}" class="h-16 rounded-lg shadow" loading="lazy"/></td>
+          <td class="px-4 py-3 text-gray-700 dark:text-gray-300 max-w-xs truncate">${p.desk}</td>
+          <td class="px-4 py-3 text-center space-x-2">
+            <button data-id="${p.id}" class="edit-btn px-3 py-1 rounded text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">Edit</button>
+            <button data-id="${p.id}" class="delete-btn px-3 py-1 rounded text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Hapus</button>
+          </td>
+        </tr>
+      `
         )
         .join("");
     } catch (error) {
@@ -359,10 +519,9 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
         "Gambar saat ini: " + data.image.split("/").pop();
       document.querySelector(".submit-text").textContent = "Update";
       document.getElementById("cancel-btn").classList.remove("hidden");
-showForm();
-      formEl.classList.remove("hidden");
+
       // Scroll ke form setelah data dimuat
-      document.getElementById("coba").scrollIntoView({
+      document.getElementById("product-form").scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
@@ -496,15 +655,9 @@ showForm();
       }
     });
   });
-    // Event listener untuk tombol Batal
-    const cancelBtn = document.getElementById("cancel-btn");
-  cancelBtn.addEventListener("click", () => {
-    resetForm();
-    hideForm();
-  });
 
   document
-    .getElementById("products-grid")
+    .getElementById("products-table")
     .addEventListener("click", async (e) => {
       if (e.target.classList.contains("edit-btn"))
         await enterEdit(e.target.dataset.id);

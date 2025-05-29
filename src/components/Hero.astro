@@ -1,12 +1,33 @@
----
+<section class="relative pt-32 pb-20 md:pt-40 overflow-hidden hero-section">
+  <!-- Background Elements -->
+  <div class="absolute inset-0 z-0">
+    <!-- Mode Terang -->
+    <div class="absolute inset-0 bg-[url('https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-LIGHT.jpg')] bg-cover bg-center dark:hidden"></div>
 
----
+    <!-- Mode Gelap -->
+    <div class="absolute inset-0 bg-[url('https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-DARK.jpg')] bg-cover bg-center hidden dark:block"></div>
+  </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-center">
-	<Fragment>
-		<slot name="hero-content-left" />
-	</Fragment>
-	<Fragment>
-		<slot name="hero-content-right" />
-	</Fragment>
-</div>
+  <div class="container-custom relative z-10">
+    <div class="flex flex-col items-start text-left gap-12">
+      <div class="slide-up" transition:animate="slide">
+        <h1 class="text-4xl sm:text-6xl md:text-7xl leading-tight font-bold">
+          <span class="font-brand1 text-[#D4AF37]">DYE</span>
+          <span class="font-display text-black dark:text-white">
+            APPAREL
+          </span>
+        </h1>
+
+        <p class="w-full max-w-lg text-xl text-secondary-900 dark:text-white mb-8">
+          Custom Tanpa Batas 
+        </p>
+
+        <div class="flex flex-wrap">
+          <a href="https://wa.me/6282213866521" class="btn-outline text-secondary-900 dark:text-white flex items-center hover:bg-[#D4AF37]/10">
+            Custom Sekarang
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

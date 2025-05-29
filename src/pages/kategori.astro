@@ -6,21 +6,22 @@ import HeroSection from '../components/HeroSection.astro';
 import { supabase } from '../lib/supabase';
 
 // Ambil data produk
-type Produk = { slug: string; image: string; title: string; categories: string[] };
-const { data: posts = [], error: postError } = await supabase
-  .from<Produk>('produk')
+const { data: posts, error: postError } = await supabase
+  .from('produk')
   .select('*');
+
 if (postError) console.error('Gagal ambil produk:', postError.message);
 
 // Ambil data kategori & subkategori
-const { data: kategoriData = [], error: kategoriError } = await supabase
+const { data: kategoriData, error: kategoriError } = await supabase
   .from('kategori')
   .select('*');
+
 if (kategoriError) console.error('Gagal ambil kategori:', kategoriError.message);
 
 // Susun nested kategori-subkategori
 const categories = kategoriData
-  .filter(k => !k.parent_slug)
+  ?.filter(k => k.parent_slug === null)
   .map(parent => ({
     name: parent.name,
     slug: parent.slug,
@@ -33,33 +34,27 @@ const categories = kategoriData
   <Header />
 
   <main class="container-custom flex flex-col lg:flex-row py-8 gap-8">
-    <!-- Sidebar Filter -->
     <aside id="sidebar" class="w-full lg:w-1/4 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
       <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Filter</h2>
       <hr class="border-gray-200 dark:border-gray-700 my-4" />
       <form id="category-filter-form" class="space-y-4">
         {categories.map(cat => (
-          <details class="group" key={cat.slug}>
+          <details class="group">
             <summary class="flex justify-between items-center cursor-pointer font-medium text-gray-900 dark:text-gray-100">
-              {cat.name}
-              <span class="transition-transform duration-200 group-open:rotate-180">▾</span>
+              {cat.name} <span class="transition-transform duration-200 group-open:rotate-180">▾</span>
             </summary>
             <div class="mt-2 ml-4 space-y-2">
               {cat.subcategories.map(sub => (
-                <label class="flex items-center ml-4 space-x-2" key={sub.slug}>
-                  <input
-                    type="checkbox"
-                    id={sub.slug}
-                    name="category"
-                    value={sub.slug}
-                    class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500"
-                  />
-                  <span class="text-sm text-gray-700 dark:text-gray-300">{sub.name}</span>
-                </label>
+                <div class="flex items-center ml-4">
+                  <input type="checkbox" id={sub.slug} name="category" value={sub.slug} class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500" />
+                  <label for={sub.slug} class="ml-2 text-sm text-gray-700 dark:text-gray-300">{sub.name}</label>
+                </div>
               ))}
             </div>
           </details>
         ))}
+        <!-- Apply Filter Button -->
+        <!-- Buttons: Apply & Reset -->
         <div class="flex gap-2 mt-4">
           <button
             id="apply-filter-btn"
@@ -81,25 +76,13 @@ const categories = kategoriData
 
     <!-- Konten Utama -->
     <section class="w-full lg:w-3/4">
-      <!-- HeroSection animasi -->
-      <div data-animate="fade-in-scale" data-delay={0}>
-        <HeroSection
-          title="Kategori"
-          highlightText=" Terbaik"
-          description="Pilih kategori layanan kami."
-        />
-      </div>
-
-      <!-- Grid Produk dengan animasi stagger -->
-      <div id="product-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 transition-opacity duration-300">
-        {posts.map((post, i) => (
+      <HeroSection title="Kategori" highlightText=" Terbaik" description="Pilih kategori layanan kami." />
+      <div id="product-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {posts?.map(post => (
           <a
             href={`/produk/${post.slug}`}
             class="card block border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:scale-105 transform transition"
             data-categories={post.categories.join(' ')}
-            data-animate="fade-in-scale"
-            data-delay={(i + 1) * 100}
-            key={post.slug}
           >
             <img src={post.image} alt={post.title} class="w-full h-48 object-cover" />
             <div class="p-4">
@@ -108,106 +91,72 @@ const categories = kategoriData
           </a>
         ))}
       </div>
-
-      <!-- Pagination Controls -->
-      <div id="pagination" class="flex justify-center items-center space-x-2 mt-8"></div>
     </section>
   </main>
 
   <Footer />
 
-  <!-- Inline Transitions & Filter -->
+  <!-- Script: manual filter trigger -->
   <script is:inline type="module">
-    // Inisialisasi Animasi Scroll
-    function initScrollAnimations() {
-      const elems = document.querySelectorAll('[data-animate]');
-      const obs = new IntersectionObserver((entries, o) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            const el = e.target;
-            const type = el.getAttribute('data-animate');
-            const delay = +el.getAttribute('data-delay') || 0;
-            el.style.animationDelay = `${delay}ms`;
-            el.classList.add(type, 'animated');
-            o.unobserve(el);
-          }
-        });
-      }, { threshold: 0.1 });
-      elems.forEach(el => obs.observe(el));
-      obs.takeRecords();
-    }
-
-    // Filter & Pagination with refresh animation
-    function initFilter() {
-      const form = document.getElementById('category-filter-form');
-      const applyBtn = document.getElementById('apply-filter-btn');
-      const resetBtn = document.getElementById('reset-filter-btn');
-      const grid = document.getElementById('product-grid');
-      let cards = Array.from(grid.querySelectorAll('.card'));
-      const paginationEl = document.getElementById('pagination');
-      let currentPage = 1, pageSize = 9;
-
-      function renderPagination(totalPages) {
-        if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
-        let html = '';
-        html += `<button ${currentPage===1?'disabled':''} data-page="${currentPage-1}" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300">Prev</button>`;
-        for (let i = 1; i <= totalPages; i++) {
-          html += `<button ${i===currentPage?'class="px-3 py-1 rounded bg-primary-600 text-white"':`data-page="${i}" class="px-3 py-1 dark:bg-gray-800 rounded bg-gray-200 hover:bg-gray-300"`}>${i}</button>`;
-        }
-        html += `<button ${currentPage===totalPages?'disabled':''} data-page="${currentPage+1}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-800">Next</button>`;
-        paginationEl.innerHTML = html;
-        paginationEl.querySelectorAll('button[data-page]').forEach(btn => btn.addEventListener('click', () => {
-          currentPage = +btn.dataset.page; applyFilter();
-        }));
-      }
-
-      function updateDisplay() {
-        const checked = Array.from(form.elements['category']).filter(i => i.checked).map(i => i.value);
-        let filtered = cards.filter(c => !checked.length || c.dataset.categories.split(' ').some(cat => checked.includes(cat)));
-        cards.forEach(c => c.style.display = 'none');
-        const totalPages = Math.ceil(filtered.length / pageSize);
-        const start = (currentPage - 1) * pageSize;
-        filtered.slice(start, start + pageSize).forEach((c, idx) => {
-          c.style.display = 'block';
-          c.dataset.animate = 'fade-in-scale';
-          c.dataset.delay = `${idx * 100}`;
-        });
-        renderPagination(totalPages);
-        initScrollAnimations();
-      }
-
-      function applyFilter() {
-        grid.classList.add('opacity-0');
-        grid.addEventListener('transitionend', function handler() {
-          grid.removeEventListener('transitionend', handler);
-          updateDisplay();
-          requestAnimationFrame(() => grid.classList.remove('opacity-0'));
-        });
-      }
-
-      applyBtn.addEventListener('click', () => {
-        currentPage = 1;
-        applyFilter();
-        const params = Array.from(form.elements['category']).filter(i => i.checked).map(i => i.value).join(',');
-        history.replaceState(null, '', window.location.pathname + (params ? `?category=${params}` : ''));
-      });
-
-      resetBtn.addEventListener('click', e => {
-        e.preventDefault();
-        form.querySelectorAll('input').forEach(i => i.checked = false);
-        applyBtn.click();
-      });
-
-      // Inisialisasi dari URL
+    const form = document.getElementById('category-filter-form');
+    const applyBtn = document.getElementById('apply-filter-btn');
+    const resetBtn = document.getElementById('reset-filter-btn');
+    const cards = document.querySelectorAll('.card');
+  
+    // Ambil array kategori aktif dari URL
+    function getActiveFromURL() {
       const params = new URLSearchParams(window.location.search);
-      const arr = params.get('category')?.split(',') || [];
-      document.querySelectorAll('input[name="category"]').forEach(i => i.checked = arr.includes(i.value));
-      applyFilter();
+      return params.has('category')
+        ? params.get('category').split(',').map(s => s.trim())
+        : [];
     }
-
-    document.addEventListener('astro:page-load', () => {
-      initScrollAnimations();
-      initFilter();
+  
+    // Sinkronkan checkbox dengan array kategori aktif
+    function applyActiveToForm(active) {
+      form.querySelectorAll('input[name="category"]').forEach(input => {
+        input.checked = active.includes(input.value);
+      });
+    }
+  
+    // Filter kartu berdasarkan checkbox
+    function filterCards() {
+      const checked = Array.from(form.elements['category'])
+        .filter(i => i.checked)
+        .map(i => i.value);
+  
+      cards.forEach(card => {
+        const cats = card.dataset.categories.split(' ');
+        card.style.display = (!checked.length || checked.some(c => cats.includes(c)))
+          ? 'block'
+          : 'none';
+      });
+  
+      // Update URL tanpa reload
+      const newParam = checked.length ? `?category=${checked.join(',')}` : '';
+      history.replaceState(null, '', window.location.pathname + newParam);
+    }
+  
+    // Event Apply
+    applyBtn.addEventListener('click', e => {
+      e.preventDefault();
+      filterCards();
+    });
+  
+    // Event Reset
+    resetBtn.addEventListener('click', e => {
+      e.preventDefault();
+      form.querySelectorAll('input[name="category"]').forEach(i => i.checked = false);
+      filterCards();
+    });
+  
+    // Inisialisasi on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const active = getActiveFromURL();
+      applyActiveToForm(active);
+      filterCards();
     });
   </script>
+  
+  
+  
 </Layout>
