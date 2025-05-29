@@ -1,0 +1,213 @@
+
+<head>
+  <!-- Tailwind CSS + Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+    @keyframes progressBar { from { width: 100%; } to { width: 0; } }
+    .fade-in { animation: fadeIn 0.7s ease-out both; }
+    .float { animation: float 4s ease-in-out infinite; }
+    #toast-container {
+      position: fixed;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 9999;
+      display: flex; flex-direction: column; gap: 0.75rem;
+      pointer-events: none;
+    }
+    .toast-success { background: linear-gradient(135deg, #a8e063, #56ab2f); }
+    .toast-error { background: linear-gradient(135deg, #ff758c, #ff7eb3); }
+    .toast .progress {
+      position: absolute; bottom: 0; left: 0; height: 4px;
+      background: rgba(255,255,255,0.8);
+      animation: progressBar 3s linear forwards;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-100 via-emerald-100 to-lime-100 min-h-screen overflow-x-hidden">
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Header -->
+  <header class="text-center py-12 fade-in">
+    <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-600">Creative Assets Admin</h1>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Form -->
+    <section id="form-section" class="bg-white bg-opacity-60 backdrop-blur-lg rounded-3xl p-8 shadow-2xl mb-12 fade-in float">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Add / Edit Asset</h2>
+      <form id="asset-form" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <input type="hidden" id="asset-id" />
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Choose Image</label>
+          <input type="file" id="file-input" accept="image/*" class="w-full text-sm text-gray-600 file:rounded-full file:bg-gradient-to-r file:from-green-400 file:to-emerald-400 file:text-white file:px-4 file:py-2 hover:file:opacity-90" />
+          <img id="preview-img" src="" alt="Preview" class="hidden mt-4 w-32 h-32 object-cover rounded-lg shadow-inner" />
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">File Name</label>
+            <input type="text" id="name" placeholder="(Auto from filename)" class="w-full rounded-2xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2" />
+          </div>
+          <div class="flex space-x-4">
+            <button type="submit" class="flex-1 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-full shadow-lg hover:from-green-600 hover:to-emerald-600 transition">Save</button>
+            <button type="button" id="cancel-edit" class="hidden flex-1 py-2 bg-white text-gray-700 border-2 border-gray-300 rounded-full shadow hover:bg-gray-50 transition">Cancel</button>
+          </div>
+        </div>
+      </form>
+      <button id="btn-logout" class="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Logout</button>
+    </section>
+
+    <!-- Cards -->
+    <section id="assets-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 fade-in"></section>
+  </main>
+
+  <!-- Supabase & App Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const supabase = createClient('https://dmclzichnixtuoaujrqr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtY2x6aWNobml4dHVvYXVqcnFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc4OTI2MTgsImV4cCI6MjA2MzQ2ODYxOH0.x_UsXk_XzuLB6IS1na8VJwdEuVDZ3-ZerPnVh3GmpRs');
+    document.addEventListener('DOMContentLoaded', async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) location.href = '/login';
+    });
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        window.location.replace('/login');
+      }
+    });
+
+    const btnLogout = document.getElementById('btn-logout');
+    btnLogout.addEventListener('click', async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        alert('Logout gagal: ' + error.message);
+      } else {
+        window.location.href = '/login';
+      }
+    });
+  </script>
+
+  <script type="module">
+    const { createClient } = supabase;
+    const supabaseClient = createClient('https://dmclzichnixtuoaujrqr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtY2x6aWNobml4dHVvYXVqcnFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc4OTI2MTgsImV4cCI6MjA2MzQ2ODYxOH0.x_UsXk_XzuLB6IS1na8VJwdEuVDZ3-ZerPnVh3GmpRs');
+    const BUCKET_NAME = 'images';
+    const FOLDER_PREFIX = 'home/';
+    const form = document.getElementById('asset-form');
+    const fileInput = document.getElementById('file-input');
+    const nameInput = document.getElementById('name');
+    const idInput = document.getElementById('asset-id');
+    const cancelBtn = document.getElementById('cancel-edit');
+    const previewImg = document.getElementById('preview-img');
+    const container = document.getElementById('assets-container');
+    const toastContainer = document.getElementById('toast-container');
+
+    function showNotification(msg, type='success') {
+      toastContainer.innerHTML = '';
+      const icons = { success: '✅', error: '⚠️' };
+      const animations = { success: 'animate-bounce', error: 'animate-pulse' };
+      const el = document.createElement('div');
+      el.className = `toast toast-${type} fade-in ${animations[type]} p-4 text-white rounded-xl shadow-lg text-center`;
+      el.style.pointerEvents = 'auto';
+      el.innerHTML = `${icons[type]} ${msg}`;
+      toastContainer.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('opacity-0');
+        setTimeout(() => el.remove(), 500);
+      }, 2000);
+    }
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        previewImg.src = URL.createObjectURL(file);
+        previewImg.classList.remove('hidden');
+      } else {
+        previewImg.classList.add('hidden');
+      }
+    });
+
+    async function loadAssets() {
+      const { data, error } = await supabaseClient.from('assets').select('id,name').order('id', { ascending: false });
+      if (error) return showNotification(error.message, 'error');
+      container.innerHTML = '';
+      data.forEach((asset, idx) => {
+        const delay = idx * 0.1;
+        const card = document.createElement('div');
+        card.className = 'bg-white bg-opacity-60 backdrop-blur-lg rounded-xl p-6 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 transition duration-300 fade-in';
+        card.style.animationDelay = `${delay}s`;
+        card.innerHTML = `
+          <img src="https://dmclzichnixtuoaujrqr.supabase.co/storage/v1/object/public/${BUCKET_NAME}/${FOLDER_PREFIX}${asset.name}?t=${Date.now()}" alt="${asset.name}" class="w-full h-44 object-cover rounded-md mb-4" />
+          <h3 class="font-semibold text-lg text-gray-800 mb-1 truncate">${asset.name}</h3>
+          <p class="text-sm text-gray-600 mb-4">ID: ${asset.id}</p>
+          <div class="flex space-x-2">
+            <button data-id="${asset.id}" class="edit-btn flex-1 py-2 rounded-full bg-green-400 text-white hover:bg-green-500 transition">Edit</button>
+            <button data-id="${asset.id}" class="del-btn flex-1 py-2 rounded-full bg-red-400 text-white hover:bg-red-500 transition">Delete</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      attachEvents();
+    }
+
+    function attachEvents() {
+      container.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => startEdit(btn.dataset.id)));
+      container.querySelectorAll('.del-btn').forEach(btn => btn.addEventListener('click', () => deleteAsset(btn.dataset.id)));
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const file = fileInput.files[0];
+      let name = nameInput.value.trim();
+      const id = idInput.value;
+      const isUpdate = Boolean(id);
+      if (!file && !id) return showNotification('Please choose a file first!', 'error');
+      if (!name && !id) return showNotification('Name cannot be empty!', 'error');
+      if (!name && file) name = file.name;
+      const key = `${FOLDER_PREFIX}${name}`;
+      if (file) {
+        const { error } = await supabaseClient.storage.from(BUCKET_NAME).upload(key, file, { upsert: true, contentType: file.type });
+        if (error) return showNotification(error.message, 'error');
+      }
+      const { error } = isUpdate
+        ? await supabaseClient.from('assets').update({ name }).eq('id', id)
+        : await supabaseClient.from('assets').insert([{ name }]);
+      if (error) return showNotification(error.message, 'error');
+      resetForm(); loadAssets();
+      showNotification(isUpdate ? 'Asset successfully updated!' : 'Asset successfully added!');
+    });
+
+    async function startEdit(id) {
+      const { data, error } = await supabaseClient.from('assets').select('id,name').eq('id', id).single();
+      if (error) return showNotification(error.message, 'error');
+      idInput.value = data.id;
+      nameInput.value = data.name;
+      previewImg.src = `https://dmclzichnixtuoaujrqr.supabase.co/storage/v1/object/public/${BUCKET_NAME}/${FOLDER_PREFIX}${data.name}`;
+      previewImg.classList.remove('hidden');
+      cancelBtn.classList.remove('hidden');
+      document.getElementById('form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    cancelBtn.addEventListener('click', resetForm);
+    function resetForm() {
+      form.reset(); idInput.value = ''; previewImg.classList.add('hidden'); cancelBtn.classList.add('hidden');
+    }
+
+    async function deleteAsset(id) {
+      if (!confirm(`Delete asset #${id}?`)) return;
+      const { data, error } = await supabaseClient.from('assets').select('name').eq('id', id).single();
+      if (error) return showNotification(error.message, 'error');
+      await supabaseClient.from('assets').delete().eq('id', id);
+      await supabaseClient.storage.from(BUCKET_NAME).remove([`${FOLDER_PREFIX}${data.name}`]);
+      loadAssets(); showNotification('Asset successfully deleted!');
+    }
+
+    loadAssets();
+  </script>
+</body>
+

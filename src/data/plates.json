@@ -1,0 +1,142 @@
+[
+	{
+		"id": 1,
+		"slug": "Map",
+		"prettyName": "Map",
+		"description": "mapp sakit",
+		"image": "/mesin-1.jpg",
+		"plates": [
+
+		]
+	},
+	{
+		"id": 2,
+		"slug": "Amplop Req",
+		"prettyName": "Amplop Req",
+		"description": "",
+			"image": "/amplopreq-1.jpg",
+		"plates": [
+			
+		]
+	},
+{
+		"id": 3,
+		"slug": "Notes",
+		"prettyName": "Notes",
+		"description": "",
+			"image": "/NOTES-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 4,
+		"slug": "Amplop CD",
+		"prettyName": "Amplop Cd",
+		"description": "",
+			"image": "/amplopcd-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 5,
+		"slug": "Box Custom",
+		"prettyName": "Box Custom",
+		"description": "",
+			"image": "/boxcustom-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 6,
+		"slug": "Buku Catatan Kehamilan Ibu",
+		"prettyName": "Buku Catatan Kehamilan Ibu",
+		"description": "",
+			"image": "/bukucatatankehamilanubu-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 7,
+		"slug": "Buku Kesehatan Ibu dan Anak",
+		"prettyName": "Buku Kesehatan Ibu dan Anak",
+		"description": "",
+			"image": "/bukukesehatanibudananak-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 8,
+		"slug": "Buku Kunjungan Rehabilitasi",
+		"prettyName": "Buku Kunjungan Rehabilitasi",
+		"description": "",
+			"image": "/bukukunjunganrehabilitasi-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 9,
+		"slug": "Formulir Pendaftaran Rumah sakit",
+		"prettyName": "Formulir Pendaftaran Rumah sakit",
+		"description": "",
+			"image": "/formulirpendaftaranrumahsakit-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 10,
+		"slug": "Kertas Catring ",
+		"prettyName": "Kertas Catring",
+		"description": "",
+			"image": "/kertascatring-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 11,
+		"slug": "Majalah",
+		"prettyName": "Majalah",
+		"description": "",
+			"image": "/majalah-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 12,
+		"slug": "sticker",
+		"prettyName": "Sticker",
+		"description": "",
+			"image": "/sticker-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 13,
+		"slug": "Note Book",
+		"prettyName": "Note Book",
+		"description": "",
+			"image": "/notebook-1.jpg",
+		"plates": [
+			
+		]
+	},
+	{
+		"id": 14,
+		"slug": "Paper Bag",
+		"prettyName": "Paper Bag",
+		"description": "",
+			"image": "/paperbag-1.jpg",
+		"plates": [
+			
+		]
+	}
+]

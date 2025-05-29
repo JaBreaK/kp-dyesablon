@@ -1,0 +1,131 @@
+---
+
+import { supabase } from '~/lib/supabase';
+import type { Plate } from '~/types';
+
+// Fetch data from Supabase
+const { data: plates, error } = await supabase
+  .from<'plates', Plate>('plates')
+  .select('slug, judul, deskripsi, image_path')
+  .order('id', { ascending: true });
+
+if (error) {
+  console.error(error);
+  throw new Error('Gagal memuat data plates dari Supabase');
+}
+
+// Map to include public URL for images
+const platesWithUrl = plates.map((p) => {
+  const { publicURL } = supabase
+    .storage
+    .from('plate-images')
+    .getPublicUrl(p.image_path);
+  return {
+    ...p,
+    gambar: publicURL || null,
+  };
+});
+---
+
+<div class="grid grid-cols-1 md:grid-cols-[220px_minmax(0,_1fr)] gap-8 max-w-screen-xl mx-auto px-6 py-12">
+  <!-- Sidebar Navigasi -->
+  <aside class="hidden md:block">
+    <div id="plate-nav-wrapper" class="sticky top-8 z-10 h-full">
+      <nav class="bg-brand-green text-white rounded-xl p-4 w-52">
+        <ul id="plate-nav" class="space-y-2 text-sm">
+          {platesWithUrl.map((plate) => (
+            <li>
+              <a
+                href={`#${plate.slug}`}
+                class="block px-3 py-2 rounded-md font-medium hover:bg-white/10 transition"
+                data-category-link={plate.slug}
+              >
+                {plate.judul}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Konten Utama -->
+  <main class="space-y-24">
+    {platesWithUrl.map((plate) => (
+      <section
+        id={plate.slug}
+        class="scroll-mt-20 space-y-10 max-w-2xl mx-auto text-center"
+        data-category-section={plate.slug}
+      >
+        <h3 class="text-brand-green text-xl font-semibold tracking-wide">
+          {plate.judul}
+        </h3>
+        {plate.gambar && (
+          <img
+            src={plate.gambar}
+            alt={plate.judul}
+            class="mx-auto rounded-lg max-w-xs"
+          />
+        )}
+        <p class="text-gray-700 text-sm">{plate.deskripsi}</p>
+      </section>
+    ))}
+  </main>
+</div>
+
+<!-- Styling Scrollable Sidebar -->
+<style>
+  #plate-nav-wrapper {
+    height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+</style>
+
+<!-- Scrollspy Script -->
+<script type="module">
+  document.addEventListener("astro:page-load", () => {
+    const links = document.querySelectorAll("[data-category-link]");
+    const sections = document.querySelectorAll("[data-category-section]");
+    let isClicking = false;
+
+    function activate(id) {
+      links.forEach((link) => {
+        link.classList.remove("bg-white", "text-brand-green");
+        link.classList.add("hover:bg-white/10");
+      });
+      const active = document.querySelector(`[data-category-link="${id}"]`);
+      if (active) {
+        active.classList.add("bg-white", "text-brand-green");
+        active.classList.remove("hover:bg-white/10");
+      }
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("click", () => {
+        isClicking = true;
+        activate(link.dataset.categoryLink);
+        setTimeout(() => (isClicking = false), 1000);
+      });
+    });
+
+    new IntersectionObserver(
+      (entries) => {
+        if (isClicking) return;
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.dataset.categorySection;
+            if (id) activate(id);
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
+    ).observeAll(sections);
+
+    const initial = window.location.hash?.substring(1) || sections[0]?.dataset.categorySection;
+    if (initial) activate(initial);
+  });
+
+  IntersectionObserver.prototype.observeAll = function (nodes) {
+    nodes.forEach((node) => this.observe(node));
+  };
+</script>

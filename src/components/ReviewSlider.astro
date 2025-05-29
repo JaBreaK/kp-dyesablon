@@ -1,0 +1,77 @@
+<script>
+	import Swiper from "swiper";
+	import { Pagination, Autoplay } from "swiper/modules";
+	import "swiper/css";
+	import "swiper/css/pagination";
+	
+	document.addEventListener("astro:page-load", () => {
+	  const swiper = document.querySelector(".swiper") as HTMLElement;
+	  new Swiper(swiper, {
+		modules: [Pagination, Autoplay],
+		loop: true,
+		slidesPerView: 1,
+		spaceBetween: 32,
+		autoplay: {
+		  delay: 3000, // Sesuaikan delay untuk interval pergantian slide
+		},
+		pagination: {
+		  el: ".swiper-pagination",
+		},
+	  });
+	});
+  </script>
+  
+  <!-- Slider Penilaian Pelanggan untuk Grafika Printing Gemilang -->
+  <div class="swiper">
+	<div class="swiper-wrapper">
+	  <!-- Slide 1 -->
+	  <div class="swiper-slide">
+		<h2 class="text-xl font-bold">Layanan Percetakan Terbaik</h2>
+		<p>Grafika Printing Gemilang menyediakan layanan percetakan berkualitas tinggi untuk kebutuhan bisnis Anda, mulai dari brosur hingga banner besar. Kami selalu mengutamakan kepuasan pelanggan.</p>
+		<div class="flex items-center gap-x-1 mt-2">
+		  <!-- Ikon Bintang -->
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		</div>
+	  </div>
+  
+	  <!-- Slide 2 -->
+	  <div class="swiper-slide">
+		<h2 class="text-xl font-bold">Penilaian Pelanggan</h2>
+		<p>"Saya sangat puas dengan hasil percetakan dari Grafika Printing Gemilang. Kualitasnya luar biasa dan pelayanan pelanggan mereka sangat responsif. Terima kasih atas layanannya!"</p>
+		<div class="flex items-center gap-x-1 mt-2">
+		  <!-- Ikon Bintang -->
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		</div>
+	  </div>
+  
+	  <!-- Slide 3 -->
+	  <div class="swiper-slide">
+		<h2 class="text-xl font-bold">Testimoni dari Klien Kami</h2>
+		<p>"Grafika Printing Gemilang selalu memberikan hasil yang memuaskan. Mereka cepat, efisien, dan harga sangat kompetitif. Kami akan terus bekerja sama!"</p>
+		<div class="flex items-center gap-x-1 mt-2">
+		  <!-- Ikon Bintang -->
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		  <span class="text-yellow-500">⭐</span>
+		</div>
+	  </div>
+	</div>
+  
+	<!-- Pagination -->
+	<div class="swiper-pagination"></div>
+  </div>
+  <!-- Link Google Review -->
+  <div class="mt-4 text-center">
+	<a href="https://g.co/kgs/FHMzxsM" target="_blank" class="text-blue-500 underline">Baca lebih banyak ulasan pelanggan kami di Google Review</a>
+  </div>
+  
