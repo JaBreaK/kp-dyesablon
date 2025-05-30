@@ -26,7 +26,7 @@ const { slug } = Astro.params;
 // Ambil satu produk berdasarkan slug
 const { data: [post], error: postError } = await supabase
   .from('produk')
-  .select('title, image, categories, desk')
+  .select('nama, gambar, kategori, deskripsi')
   .eq('slug', slug)
   .limit(1);
 
@@ -40,7 +40,7 @@ if (!post) {
 
 
 ---
-<Layout title={`${post.title} – Dye Apparel`} description={post.desk}>
+<Layout title={`${post.nama} – Dye Apparel`} description={post.deskripsi}>
   <Header />
   <main class="container-custom py-16">
     
@@ -55,7 +55,7 @@ if (!post) {
           </div>
           
           <div class="flex items-center justify-between">
-            <h1 class="text-4xl font-bold text-gray-900 dark:text-white">{post.title}</h1>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white">{post.nama}</h1>
             <button
               class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
               type="button"
@@ -63,16 +63,16 @@ if (!post) {
             </button>
           </div>
       <img 
-        src={post.image} 
-        alt={post.title}
+        src={post.gambar} 
+        alt={post.nama}
         class="w-full h-auto rounded-xl object-cover shadow-lg"
       />
 
       
-      <div class="prose prose-lg dark:prose-invert" set:html={post.desk} />
+      <div class="prose prose-lg dark:prose-invert" set:html={post.deskripsi} />
 
       <div class="flex flex-wrap gap-2">
-        {post.categories.map(cat => (
+        {post.kategori.map(cat => (
           <span
             class="px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-white rounded-full text-sm"
             >

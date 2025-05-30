@@ -13,54 +13,62 @@
       .animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
     </style>
     <script type="module">
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-      const supabaseUrl = 'https://pmfzypvynmyotmvbgafi.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM';
-      export const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    persistSession: true,       // simpan session di localStorage
-    autoRefreshToken: true,     // otomatis refresh access_token
-    detectSessionInUrl: true,   // kalau ada kode dari OAuth redirect
-  }
-});
-      document.addEventListener('DOMContentLoaded', async () => {
-        // 1) Cek session dulu, kalau sudah login langsung ke admin
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          window.location.href = '/admin';
-          return; // stop eksekusi selanjutnya
-        }
+  const supabaseUrl = 'https://pmfzypvynmyotmvbgafi.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // 2) Setup form login
-        const form = document.querySelector('.login-form');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const errorMsg = document.createElement('p');
-        errorMsg.id = 'error-msg';
-        errorMsg.className = 'text-red-500 text-sm mt-2 hidden';
-        form.appendChild(errorMsg);
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1) Cek custom session: kalau ada, redirect ke /admin
+    const staffSession = localStorage.getItem('staffSession');
+    if (staffSession) {
+      window.location.href = '/admin';
+      return;
+    }
 
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          errorMsg.textContent = '';
-          errorMsg.classList.add('hidden');
+    // 2) Setup form login
+    const form = document.querySelector('.login-form');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const errorMsg = document.createElement('p');
+    errorMsg.id = 'error-msg';
+    errorMsg.className = 'text-red-500 text-sm mt-2 hidden';
+    form.appendChild(errorMsg);
 
-          const { data, error } = await supabase.auth.signInWithPassword({
-            email: usernameInput.value,
-            password: passwordInput.value,
-          });
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      errorMsg.textContent = '';
+      errorMsg.classList.add('hidden');
 
-          if (error) {
-            errorMsg.textContent = error.message;
-            errorMsg.classList.remove('hidden');
-          } else {
-            // kalau berhasil, supabase sudah simpan session otomatis
-            window.location.href = '/admin';
-          }
-        });
-      });
-    </script>
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      // 3) Query staff table
+      const { data, error } = await supabase
+        .from('staff')
+        .select('id, username')
+        .eq('username', username)
+        .eq('password', password)
+        .single();
+
+      if (error || !data) {
+        // either no match or an error
+        errorMsg.textContent = 'Invalid username or password';
+        errorMsg.classList.remove('hidden');
+      } else {
+        // 4) Save custom session and redirect
+        localStorage.setItem('staffSession', JSON.stringify({
+          id: data.id,
+          username: data.username,
+          loggedAt: new Date().toISOString()
+        }));
+        window.location.href = '/admin';
+      }
+    });
+  });
+</script>
+
   </head>
 
   <body class="bg-gradient-to-br from-[#f5f7fa] to-[#c3cfe2]">

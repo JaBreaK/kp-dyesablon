@@ -6,7 +6,7 @@ import HeroSection from '../components/HeroSection.astro';
 import { supabase } from '../lib/supabase';
 
 // Ambil data produk
-type Produk = { slug: string; image: string; title: string; categories: string[] };
+type Produk = { slug: string; gambar: string; nama: string; kategori: string[] };
 const { data: posts = [], error: postError } = await supabase
   .from<Produk>('produk')
   .select('*');
@@ -96,14 +96,14 @@ const categories = kategoriData
           <a
             href={`/produk/${post.slug}`}
             class="card block border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:scale-105 transform transition"
-            data-categories={post.categories.join(' ')}
+            data-categories={post.kategori.join(' ')}
             data-animate="fade-in-scale"
             data-delay={(i + 1) * 100}
             key={post.slug}
           >
-            <img src={post.image} alt={post.title} class="w-full h-48 object-cover" />
+            <img src={post.gambar} alt={post.nama} class="w-full h-48 object-cover" />
             <div class="p-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{post.title}</h3>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{post.nama}</h3>
             </div>
           </a>
         ))}

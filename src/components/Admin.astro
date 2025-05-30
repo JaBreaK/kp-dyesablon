@@ -1,35 +1,59 @@
 ---
 //ini di isi juga
-const categories = [
-  "jersey", "lanyard", "spanduk", "sablon", "kaos",
-  "dtf", "plastisol", "jahit", "hoodie", "kemeja", "seragam", "jaket"
-];
+const categoryGroups = {
+  Sublimasi: [
+    "sublimasi-batik",
+    "sublimasi-spanduk",
+    "sublimasi-lanyard",
+    "sublimasi-jersey",
+  ],
+  Sablon: [
+    "sablon-jersey",
+    "sablon-kaos",
+    "sablon-dtf",
+    "sablon-plastisol",
+    "sablon-hoodie",
+    "sablon-kemeja",
+    "sablon-seragam",
+    "sablon-jaket",
+    "sablon-batik",
+  ],
+  Jahit: [
+    "jahit-kaos",
+    "jahit-hoodie",
+    "jahit-kemeja",
+    "jahit-seragam",
+    "jahit-jaket",
+    "jahit-batik",
+  ],
+};
+
 ---
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
   const supabase = createClient('https://pmfzypvynmyotmvbgafi.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM');
   document.addEventListener('DOMContentLoaded', async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) location.href = '/login';
-  });
+    const staffSession = localStorage.getItem('staffSession');
+    if (!staffSession) {
+      window.location.replace('/login');
+      return;
+    }});
   
     // Sinkronisasi logout di tab lain
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') {
-      window.location.replace('/login');
-    }
-  });
+  window.addEventListener('storage', e => {
+      if (e.key === 'staffSession' && e.newValue === null) {
+        window.location.replace('/login');
+      }
+    });
 
   // Tombol logout
       const btnLogout = document.getElementById('btn-logout');
-      btnLogout.addEventListener('click', async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-          alert('Logout gagal: ' + error.message);
-        } else {
-          window.location.href = '/login';
-        }
-      });
+    btnLogout.addEventListener('click', () => {
+      // hapus session
+      localStorage.removeItem('staffSession');
+      // redirect
+      window.location.replace('/login');
+    });
 </script>
 <!-- Tambah padding konsisten di seluruh konten -->
 <section class="p-6 md:p-" >
@@ -59,13 +83,13 @@ const categories = [
 
       <div class="md:col-span-2">
         <label
-          for="title"
+          for="nama"
           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >Judul Produk</label
         >
         <!-- Contoh input dengan hover dan focus animation -->
         <input
-          id="title"
+          id="nama"
           type="text"
           required
           placeholder="Masukkan judul"
@@ -80,21 +104,41 @@ hover:border-primary-400 shadow-sm"
           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >Kategori</label
         >
-        <div id="categories" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 border rounded-lg p-3 bg-white dark:bg-gray-700">
-          {categories.map((category) => (
-            <label class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
-              <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600 transition-colors">
-                <input type="checkbox" value={category} class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer" />
-                <svg class="invisible w-4 h-4 text-primary-600 peer-checked:visible" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </span>
-            </label>
-          ))}
-        </div>
+        <div id="kategori" class="space-y-6">
+  {Object.entries(categoryGroups).map(([groupName, cats]) => (
+    <div>
+      <h3 class="text-lg font-semibold mb-2 dark:text-gray-200">{groupName}</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 border rounded-lg p-3 bg-white dark:bg-gray-700">
+        {cats.map(category => (
+          <label
+            key={category}
+            class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+          >
+            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600">
+              <input
+                type="checkbox"
+                value={category}
+                class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer"
+              />
+              <svg
+                class="invisible w-4 h-4 text-primary-600 peer-checked:visible"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">
+              {category.replace(/^[^-]+-/, '').replace(/(^|\s)\S/g, l => l.toUpperCase())}
+            </span>
+          </label>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+
         
         <p id="category-error" class="text-red-500 text-sm mt-1 hidden">
           Pilih minimal satu kategori!
@@ -204,7 +248,7 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
 
     <!-- Search & Filter -->
 <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 space-y-4 md:space-y-0">
-  <!-- Search by Title -->
+  <!-- Search by nama -->
   <input
     id="search-input"
     type="text"
@@ -273,7 +317,7 @@ let filterCategory = "";
     );
   }
 
-  // cari by title
+  // cari by nama
 document.getElementById("search-input")
   .addEventListener("input", e => {
     searchTerm = e.target.value.trim().toLowerCase();
@@ -323,8 +367,8 @@ document.getElementById("search-input")
   const form = document.getElementById("product-form");
   const hiddenDesk = document.createElement("input");
   hiddenDesk.type = "hidden";
-  hiddenDesk.id = "desk-html";
-  hiddenDesk.name = "desk";
+  hiddenDesk.id = "deskripsi-html";
+  hiddenDesk.name = "deskripsi";
   form.appendChild(hiddenDesk);
 
   // Utility
@@ -337,7 +381,7 @@ document.getElementById("search-input")
       .trim()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-  const getCategories = () =>
+  const getkategori = () =>
     Array.from(document.querySelectorAll(".category-checkbox:checked")).map(
       (cb) => cb.value
     );
@@ -347,7 +391,7 @@ document.getElementById("search-input")
     const { data, error } = await sb
       .from("produk")
       .select("*")
-      .order("title", { ascending: true });
+      .order("nama", { ascending: true });
     if (error) throw error;
 
     allProducts = data;           // simpan semua produk
@@ -360,15 +404,15 @@ document.getElementById("search-input")
 function renderProductsPage() {
   // 1. Filter dulu
   let filtered = allProducts.filter(p => {
-    const titleMatch = p.title.toLowerCase().includes(searchTerm);
-    const categoryMatch = p.categories.some(cat =>
+    const namaMatch = p.nama.toLowerCase().includes(searchTerm);
+    const categoryMatch = p.kategori.some(cat =>
       cat.toLowerCase().includes(searchTerm)
     );
-    return titleMatch || categoryMatch;
+    return namaMatch || categoryMatch;
   });
 
   if (filterCategory) {
-    filtered = filtered.filter(p => p.categories.includes(filterCategory));
+    filtered = filtered.filter(p => p.kategori.includes(filterCategory));
   }
 
   // 2. Pagination slice
@@ -381,10 +425,10 @@ function renderProductsPage() {
   grid.innerHTML = pageItems
     .map(p => `
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 flex flex-col justify-between transition hover:shadow-xl h-full">
-        <img src="${p.image}" alt="${p.title}" class="rounded-xl w-full h-40 object-cover mb-3" loading="lazy" />
+        <img src="${p.gambar}" alt="${p.nama}" class="rounded-xl w-full h-40 object-cover mb-3" loading="lazy" />
         <div class="flex-1">
-          <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-1 truncate">${p.title}</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400 capitalize">Kategori: ${p.categories.join(", ")}</p>
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-1 truncate">${p.nama}</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 capitalize">Kategori: ${p.kategori.join(", ")}</p>
         </div>
         <div class="mt-4 flex items-center justify-between text-sm font-medium">
           <button data-id="${p.id}" class="edit-btn text-primary-600 hover:underline">Edit</button>
@@ -461,17 +505,17 @@ function renderPagination(totalPages) {
         .single();
       if (error) throw error;
       document.getElementById("product-id").value = data.id;
-      document.getElementById("title").value = data.title;
-      document.getElementById("existing-image-url").value = data.image;
-      quill.root.innerHTML = data.desk;
+      document.getElementById("nama").value = data.nama;
+      document.getElementById("existing-image-url").value = data.gambar;
+      quill.root.innerHTML = data.deskripsi;
       document.querySelectorAll(".category-checkbox").forEach((cb) => {
-        cb.checked = data.categories.includes(cb.value);
+        cb.checked = data.kategori.includes(cb.value);
       });
       const imgPrev = document.getElementById("image-preview");
-      imgPrev.src = data.image;
+      imgPrev.src = data.gambar;
       imgPrev.classList.remove("hidden");
       document.getElementById("file-name").textContent =
-        "Gambar saat ini: " + data.image.split("/").pop();
+        "Gambar saat ini: " + data.gambar.split("/").pop();
       document.querySelector(".submit-text").textContent = "Update";
       document.getElementById("cancel-btn").classList.remove("hidden");
 showForm();
@@ -491,12 +535,12 @@ showForm();
     try {
       const { data, error } = await sb
         .from("produk")
-        .select("image")
+        .select("gambar")
         .eq("id", id)
         .single();
       if (error) throw error;
-      if (data.image) {
-        const imgPath = new URL(data.image).pathname
+      if (data.gambar) {
+        const imgPath = new URL(data.gambar).pathname
           .split("/")
           .slice(6)
           .join("/");
@@ -528,8 +572,8 @@ async function uploadImage(file) {
     
 
     // Validasi kategori
-    const categories = getCategories();
-    if (categories.length === 0) {
+    const kategori = getkategori();
+    if (kategori.length === 0) {
       document.getElementById("category-error").classList.remove("hidden");
       return;
     }
@@ -545,8 +589,8 @@ async function uploadImage(file) {
 
     try {
       const id = document.getElementById("product-id").value;
-      const title = document.getElementById("title").value.trim();
-      const desk = hiddenDesk.value;
+      const nama = document.getElementById("nama").value.trim();
+      const deskripsi = hiddenDesk.value;
       let imageUrl = document.getElementById("existing-image-url").value;
       const file = document.getElementById("image-file").files[0];
       
@@ -563,7 +607,7 @@ async function uploadImage(file) {
       }
 
  // sisanya: insert/update pakai imageUrl
- const productData = { title, slug: slugify(title), categories, desk, image: imageUrl };
+ const productData = { nama, slug: slugify(nama), kategori, deskripsi, gambar: imageUrl };
   if (id) {
     await sb.from("produk").update(productData).eq("id", id);
   } else {
@@ -612,7 +656,7 @@ async function uploadImage(file) {
       dropArea.classList.toggle("border-primary-500", ev === "dragover");
       if (ev === "drop") {
         const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
+        if (file && file.type.startsWith("gambar/")) {
           fileInput.files = e.dataTransfer.files;
           fileNameEl.textContent = file.name;
           const reader = new FileReader();
