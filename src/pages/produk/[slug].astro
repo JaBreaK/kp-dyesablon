@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import Wapop from '../../components/wapop.astro';
 import { supabase } from '../../lib/supabase';
 
 export async function getStaticPaths() {
@@ -85,3 +86,4 @@ if (!post) {
   </main>
   <Footer />
 </Layout>
+  <Wapop />

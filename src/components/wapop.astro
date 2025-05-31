@@ -1,0 +1,64 @@
+<button
+  id="whatsapp-btn"
+  class="fixed bottom-6 right-6 p-2 z-50 shadow-lg bg-transparent hover:scale-105 transition-transform"
+  aria-label="Chat via WhatsApp"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="w-12 h-12">
+    <path
+      fill="#25D366"
+      d="M16.001 2.667C8.64 2.667 2.667 8.64 2.667 16c0 2.773.747 5.386 2.173 7.7L2 30l6.506-2.774A13.275 13.275 0 0 0 16 29.333C23.36 29.333 29.333 23.36 29.333 16S23.36 2.667 16.001 2.667z"
+    ></path>
+    <path
+      fill="#FFF"
+      d="M21.241 19.574c-.28-.14-1.64-.813-1.893-.907-.253-.093-.44-.14-.627.14-.187.28-.72.907-.88 1.093-.16.187-.32.2-.6.067-.28-.14-1.187-.44-2.26-1.4-.833-.747-1.4-1.667-1.567-1.947-.16-.28-.017-.433.12-.573.12-.12.28-.32.42-.48.14-.16.187-.28.28-.467.093-.187.047-.35-.02-.48-.066-.14-.6-1.453-.827-1.993-.22-.527-.44-.46-.627-.467h-.527c-.187 0-.48.067-.733.35s-.96.933-.96 2.28.98 2.647 1.12 2.827c.14.187 1.907 2.933 4.627 4.107.647.28 1.153.447 1.547.573.653.207 1.247.18 1.72.107.527-.08 1.64-.667 1.873-1.307.233-.64.233-1.187.16-1.307-.066-.12-.253-.187-.533-.327z"
+    ></path>
+  </svg>
+</button>
+
+<!-- Modal -->
+<div
+  id="whatsapp-modal"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-40"
+>
+  <div class="bg-white rounded-xl p-6 w-80 relative">
+    <button
+      id="whatsapp-close"
+      class="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+      aria-label="Close"
+    >
+      &times;
+    </button>
+    <h2 class="text-xl font-semibold mb-2">Chat via WhatsApp</h2>
+    <p class="text-gray-600 mb-4">Klik tombol di bawah untuk langsung chat:</p>
+    <a
+      href="https://wa.me/c/6289601651641?text=Halo%20Admin%2C%20saya%20mau%20tanya%20..."
+      target="_blank"
+      class="block text-center py-3 rounded-lg bg-green-500 hover:bg-green-600 text-white font-medium transition"
+    >
+      Buka WhatsApp
+    </a>
+  </div>
+</div>
+
+<!-- Script -->
+<script type="module">
+  document.addEventListener("astro:page-load", () => {
+    const btn = document.getElementById("whatsapp-btn");
+    const modal = document.getElementById("whatsapp-modal");
+    const close = document.getElementById("whatsapp-close");
+
+    if (btn && modal && close) {
+      btn.addEventListener("click", () => {
+        modal.classList.remove("hidden");
+      });
+
+      close.addEventListener("click", () => {
+        modal.classList.add("hidden");
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.add("hidden");
+      });
+    }
+  });
+</script>

@@ -27,57 +27,68 @@ const categoryGroups = {
     "jahit-batik",
   ],
 };
-
 ---
+
 <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-  const supabase = createClient('https://pmfzypvynmyotmvbgafi.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM');
-  document.addEventListener('DOMContentLoaded', async () => {
-    const staffSession = localStorage.getItem('staffSession');
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+  const supabase = createClient(
+    "https://pmfzypvynmyotmvbgafi.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM",
+  );
+  document.addEventListener("DOMContentLoaded", async () => {
+    const staffSession = localStorage.getItem("staffSession");
     if (!staffSession) {
-      window.location.replace('/login');
+      window.location.replace("/login");
       return;
-    }});
-  
-    // Sinkronisasi logout di tab lain
-  window.addEventListener('storage', e => {
-      if (e.key === 'staffSession' && e.newValue === null) {
-        window.location.replace('/login');
-      }
-    });
+    }
+  });
+
+  // Sinkronisasi logout di tab lain
+  window.addEventListener("storage", (e) => {
+    if (e.key === "staffSession" && e.newValue === null) {
+      window.location.replace("/login");
+    }
+  });
 
   // Tombol logout
-      const btnLogout = document.getElementById('btn-logout');
-    btnLogout.addEventListener('click', () => {
-      // hapus session
-      localStorage.removeItem('staffSession');
-      // redirect
-      window.location.replace('/login');
-    });
+  const btnLogout = document.getElementById("btn-logout");
+  btnLogout.addEventListener("click", () => {
+    // hapus session
+    localStorage.removeItem("staffSession");
+    // redirect
+    window.location.replace("/login");
+  });
 </script>
 <!-- Tambah padding konsisten di seluruh konten -->
-<section class="p-6 md:p-" >
-  <div class="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 animate-fadeIn">
+<section class="p-6 md:p-">
+  <div
+    class="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 animate-fadeIn"
+  >
     <!-- Header Section -->
-    <div class="flex justify-between items-start mb-15"> <!-- Tambahkan flex container -->
-      <h1 id="coba" class="text-4xl font-extrabold bg-gradient-to-r text-gray-700 dark:text-[#ffffff] bg-clip-text">
+    <div class="flex justify-between items-start mb-15">
+      <!-- Tambahkan flex container -->
+      <h1
+        id="coba"
+        class="text-4xl font-extrabold bg-gradient-to-r text-gray-700 dark:text-[#ffffff] bg-clip-text"
+      >
         Manajemen Produk
       </h1>
-      
+
       <!-- Tombol Tambah Produk dipindah ke samping judul -->
-      <button 
-        id="add-btn" 
-        class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition transform hover:scale-105 shadow-md">
+      <button
+        id="add-btn"
+        class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition transform hover:scale-105 shadow-md"
+      >
         Tambah Produk
       </button>
-
     </div>
 
     <!-- Produk Form -->
     <!-- Tambah glassmorphism untuk form -->
     <form
-    id="product-form"
-    class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 rounded-xl p-6 shadow-lg opacity-0 -translate-y-4 transition-all duration-300 hover:shadow-xl">
+      id="product-form"
+      class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 rounded-xl p-6 shadow-lg opacity-0 -translate-y-4 transition-all duration-300 hover:shadow-xl"
+    >
       <input type="hidden" id="product-id" />
       <input type="hidden" id="existing-image-url" />
 
@@ -105,41 +116,51 @@ hover:border-primary-400 shadow-sm"
           >Kategori</label
         >
         <div id="kategori" class="space-y-6">
-  {Object.entries(categoryGroups).map(([groupName, cats]) => (
-    <div>
-      <h3 class="text-lg font-semibold mb-2 dark:text-gray-200">{groupName}</h3>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 border rounded-lg p-3 bg-white dark:bg-gray-700">
-        {cats.map(category => (
-          <label
-            key={category}
-            class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
-          >
-            <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600">
-              <input
-                type="checkbox"
-                value={category}
-                class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer"
-              />
-              <svg
-                class="invisible w-4 h-4 text-primary-600 peer-checked:visible"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">
-              {category.replace(/^[^-]+-/, '').replace(/(^|\s)\S/g, l => l.toUpperCase())}
-            </span>
-          </label>
-        ))}
-      </div>
-    </div>
-  ))}
-</div>
+          {
+            Object.entries(categoryGroups).map(([groupName, cats]) => (
+              <div>
+                <h3 class="text-lg font-semibold mb-2 dark:text-gray-200">
+                  {groupName}
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 border rounded-lg p-3 bg-white dark:bg-gray-700">
+                  {cats.map((category) => (
+                    <label
+                      key={category}
+                      class="group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                    >
+                      <div class="relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600">
+                        <input
+                          type="checkbox"
+                          value={category}
+                          class="category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer"
+                        />
+                        <svg
+                          class="invisible w-4 h-4 text-primary-600 peer-checked:visible"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="3"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                      <span class="text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium">
+                        {category
+                          .replace(/^[^-]+-/, "")
+                          .replace(/(^|\s)\S/g, (l) => l.toUpperCase())}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+        </div>
 
-        
         <p id="category-error" class="text-red-500 text-sm mt-1 hidden">
           Pilih minimal satu kategori!
         </p>
@@ -194,7 +215,7 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
       </div>
 
       <!-- Quill Editor Deskripsi -->
-      <div class="md:col-span-2 ">
+      <div class="md:col-span-2">
         <label
           for="editor"
           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
@@ -211,7 +232,7 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
         <button
           type="button"
           id="cancel-btn"
-          class=" px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg transition-colors"
+          class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg transition-colors"
           >Batal</button
         >
         <button
@@ -247,28 +268,34 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
     </form>
 
     <!-- Search & Filter -->
-<div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 space-y-4 md:space-y-0">
-  <!-- Search by nama -->
-  <input
-    id="search-input"
-    type="text"
-    placeholder="Cari produk..."
-    class="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:border-primary-500 dark:bg-gray-800 focus:ring-primary-200 transition"
-  />
+    <div
+      class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 space-y-4 md:space-y-0"
+    >
+      <!-- Search by nama -->
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Cari produk..."
+        class="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:border-primary-500 dark:bg-gray-800 focus:ring-primary-200 transition"
+      />
 
-  <!-- Filter by Category -->
-
-</div>
-
+      <!-- Filter by Category -->
+    </div>
 
     <!-- Produk Table -->
-    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
-
+    <div
+      id="products-grid"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch"
+    >
       <!-- Card akan di-inject via JS -->
     </div>
     <!-- Pagination Controls -->
-<div id="pagination" class="flex justify-center items-center space-x-2 mt-6"></div>
-          <button
+    <div
+      id="pagination"
+      class="flex justify-center items-center space-x-2 mt-6"
+    >
+    </div>
+    <button
       id="btn-logout"
       class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
     >
@@ -276,6 +303,12 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
     </button>
   </div>
 </section>
+<!-- Add this at the bottom of your HTML body -->
+<div
+  id="notification-container"
+  class="fixed top-4 right-4 z-50 max-w-sm w-full space-y-3"
+>
+</div>
 
 <!-- Quill core -->
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
@@ -289,13 +322,12 @@ cursor-pointer transition-all duration-300 hover:shadow-xl group"
   const formEl = document.getElementById("product-form");
   const addBtn = document.getElementById("add-btn");
   let allProducts = [];
-let currentPage = 1;
-const pageSize = 8;
+  let currentPage = 1;
+  const pageSize = 8;
 
-// State filter
-let searchTerm = "";
-let filterCategory = "";
-
+  // State filter
+  let searchTerm = "";
+  let filterCategory = "";
 
   function showForm() {
     formEl.classList.remove("hidden");
@@ -313,20 +345,16 @@ let filterCategory = "";
     formEl.addEventListener(
       "transitionend",
       () => formEl.classList.add("hidden"),
-      { once: true }
+      { once: true },
     );
   }
 
   // cari by nama
-document.getElementById("search-input")
-  .addEventListener("input", e => {
+  document.getElementById("search-input").addEventListener("input", (e) => {
     searchTerm = e.target.value.trim().toLowerCase();
-    currentPage = 1;           // kembalikan ke halaman 1
+    currentPage = 1; // kembalikan ke halaman 1
     renderProductsPage();
   });
-
-
-
 
   // Quill init
   const quill = new Quill("#editor", {
@@ -341,16 +369,14 @@ document.getElementById("search-input")
         ["clean"],
       ],
     },
-    
   });
   addBtn.addEventListener("click", () => {
-  resetForm();
-  showForm();
-  document.getElementById("cancel-btn").classList.remove("hidden"); // Tambahin ini
-  formEl.scrollIntoView({ behavior: "smooth", block: "center" });
-});
+    resetForm();
+    showForm();
+    document.getElementById("cancel-btn").classList.remove("hidden"); // Tambahin ini
+    formEl.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 
-  
   // Contoh alert sukses dengan animasi
   function showNotification(message) {
     const alert = document.createElement("div");
@@ -383,47 +409,49 @@ document.getElementById("search-input")
       .replace(/^-+|-+$/g, "");
   const getkategori = () =>
     Array.from(document.querySelectorAll(".category-checkbox:checked")).map(
-      (cb) => cb.value
+      (cb) => cb.value,
     );
 
-    async function fetchProducts() {
-  try {
-    const { data, error } = await sb
-      .from("produk")
-      .select("*")
-      .order("nama", { ascending: true });
-    if (error) throw error;
+  async function fetchProducts() {
+    try {
+      const { data, error } = await sb
+        .from("produk")
+        .select("*")
+        .order("nama", { ascending: true });
+      if (error) throw error;
 
-    allProducts = data;           // simpan semua produk
-    renderProductsPage();         // render halaman pertama
-  } catch (error) {
-    alert("Gagal memuat produk: " + error.message);
-  }
-}
-
-function renderProductsPage() {
-  // 1. Filter dulu
-  let filtered = allProducts.filter(p => {
-    const namaMatch = p.nama.toLowerCase().includes(searchTerm);
-    const categoryMatch = p.kategori.some(cat =>
-      cat.toLowerCase().includes(searchTerm)
-    );
-    return namaMatch || categoryMatch;
-  });
-
-  if (filterCategory) {
-    filtered = filtered.filter(p => p.kategori.includes(filterCategory));
+      allProducts = data; // simpan semua produk
+      renderProductsPage(); // render halaman pertama
+    } catch (error) {
+      showNotification('error', "Gagal memuat produk: " + error.message);
+    }
   }
 
-  // 2. Pagination slice
-  const totalPages = Math.ceil(filtered.length / pageSize);
-  const start = (currentPage - 1) * pageSize;
-  const pageItems = filtered.slice(start, start + pageSize);
+  function renderProductsPage() {
+    // 1. Filter dulu
+    let filtered = allProducts.filter((p) => {
+      const namaMatch = p.nama.toLowerCase().includes(searchTerm);
+      const categoryMatch = p.kategori.some((cat) =>
+        cat.toLowerCase().includes(searchTerm),
+      );
+      return namaMatch || categoryMatch;
+    });
 
-  // 3. Render grid
-  const grid = document.getElementById("products-grid");
-  grid.innerHTML = pageItems
-    .map(p => `
+    if (filterCategory) {
+      filtered = filtered.filter((p) => p.kategori.includes(filterCategory));
+    }
+
+    // 2. Pagination slice
+    const totalPages = Math.ceil(filtered.length / pageSize);
+    const start = (currentPage - 1) * pageSize;
+    const pageItems = filtered.slice(start, start + pageSize);
+
+    // 3. Render grid
+    const grid = document.getElementById("products-grid");
+    grid.innerHTML =
+      pageItems
+        .map(
+          (p) => `
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 flex flex-col justify-between transition hover:shadow-xl h-full">
         <img src="${p.gambar}" alt="${p.nama}" class="rounded-xl w-full h-40 object-cover mb-3" loading="lazy" />
         <div class="flex-1">
@@ -435,51 +463,50 @@ function renderProductsPage() {
           <button data-id="${p.id}" class="delete-btn text-red-500 hover:underline">Hapus</button>
         </div>
       </div>
-    `).join("") || `<p class="col-span-full text-center text-gray-500">Produk tidak ditemukan.</p>`;
+    `,
+        )
+        .join("") ||
+      `<p class="col-span-full text-center text-gray-500">Produk tidak ditemukan.</p>`;
 
-  // 4. Render pagination berdasarkan jumlah filtered
-  renderPagination(totalPages);
+    // 4. Render pagination berdasarkan jumlah filtered
+    renderPagination(totalPages);
 
-  // 5. Scroll ke grid
-  document.getElementById("add-btn")
-    .scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-
-function renderPagination(totalPages) {
-  const pagDiv = document.getElementById("pagination");
-  if (totalPages <= 1) {
-    pagDiv.innerHTML = ""; // sembunyikan kalau <=1 halaman
-    return;
+    // 5. Scroll ke grid
+    document
+      .getElementById("add-btn")
+      .scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  let buttons = "";
+  function renderPagination(totalPages) {
+    const pagDiv = document.getElementById("pagination");
+    if (totalPages <= 1) {
+      pagDiv.innerHTML = ""; // sembunyikan kalau <=1 halaman
+      return;
+    }
 
-  // Prev
-  buttons += `<button ${currentPage === 1 ? 'disabled class="opacity-50"' : ''} data-page="${currentPage-1}" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300">Prev</button>`;
+    let buttons = "";
 
-  // Nomor halaman
-  for (let i = 1; i <= totalPages; i++) {
-    buttons += `<button ${i === currentPage ? 'class="px-3 py-1 rounded bg-primary-600 text-white"' : 'data-page="'+i+'" class="px-3 py-1 rounded dark:bg-gray-800 bg-gray-200 hover:bg-gray-300"'}>${i}</button>`;
-  }
+    // Prev
+    buttons += `<button ${currentPage === 1 ? 'disabled class="opacity-50"' : ""} data-page="${currentPage - 1}" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300">Prev</button>`;
 
-  // Next
-  buttons += `<button ${currentPage === totalPages ? 'disabled class="opacity-50"' : ''} data-page="${currentPage+1}" class="px-3 py-1 rounded dark:bg-gray-800 bg-gray-200 hover:bg-gray-300">Next</button>`;
+    // Nomor halaman
+    for (let i = 1; i <= totalPages; i++) {
+      buttons += `<button ${i === currentPage ? 'class="px-3 py-1 rounded bg-primary-600 text-white"' : 'data-page="' + i + '" class="px-3 py-1 rounded dark:bg-gray-800 bg-gray-200 hover:bg-gray-300"'}>${i}</button>`;
+    }
 
-  pagDiv.innerHTML = buttons;
+    // Next
+    buttons += `<button ${currentPage === totalPages ? 'disabled class="opacity-50"' : ""} data-page="${currentPage + 1}" class="px-3 py-1 rounded dark:bg-gray-800 bg-gray-200 hover:bg-gray-300">Next</button>`;
 
-  // Attach listeners
-  pagDiv.querySelectorAll("button[data-page]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      currentPage = Number(btn.getAttribute("data-page"));
-      renderProductsPage();
+    pagDiv.innerHTML = buttons;
+
+    // Attach listeners
+    pagDiv.querySelectorAll("button[data-page]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentPage = Number(btn.getAttribute("data-page"));
+        renderProductsPage();
+      });
     });
-  });
-}
-
-
-
-
+  }
 
   function resetForm() {
     form.reset();
@@ -518,7 +545,7 @@ function renderPagination(totalPages) {
         "Gambar saat ini: " + data.gambar.split("/").pop();
       document.querySelector(".submit-text").textContent = "Update";
       document.getElementById("cancel-btn").classList.remove("hidden");
-showForm();
+      showForm();
       formEl.classList.remove("hidden");
       // Scroll ke form setelah data dimuat
       document.getElementById("product-form").scrollIntoView({
@@ -526,7 +553,7 @@ showForm();
         block: "center",
       });
     } catch (error) {
-      alert("Gagal memuat produk: " + error.message);
+      showNotification('error', "Gagal memuat produk: " + error.message);
     }
   }
 
@@ -548,15 +575,15 @@ showForm();
       }
       await sb.from("produk").delete().eq("id", id);
       await fetchProducts();
-      alert("Produk berhasil dihapus!");
+      showNotification("Berhasil DI Hapus", "Produk berhasil dihapus!");
     } catch (error) {
       alert("Gagal menghapus produk: " + error.message);
     }
   }
 
   // 1. Tambahkan fungsi uploadImage di sini
-// Fungsi helper: upload file ke bucket "images" dan kembalikan public URL
-async function uploadImage(file) {
+  // Fungsi helper: upload file ke bucket "images" dan kembalikan public URL
+  async function uploadImage(file) {
     const path = `produk/${Date.now()}_${file.name}`;
     const { data, error } = await sb.storage
       .from("images")
@@ -565,11 +592,9 @@ async function uploadImage(file) {
     return sb.storage.from("images").getPublicUrl(data.path).data.publicUrl;
   }
 
-
   // Event Listeners
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    
 
     // Validasi kategori
     const kategori = getkategori();
@@ -593,7 +618,6 @@ async function uploadImage(file) {
       const deskripsi = hiddenDesk.value;
       let imageUrl = document.getElementById("existing-image-url").value;
       const file = document.getElementById("image-file").files[0];
-      
 
       if (file) {
         if (imageUrl) {
@@ -606,18 +630,26 @@ async function uploadImage(file) {
         imageUrl = await uploadImage(file);
       }
 
- // sisanya: insert/update pakai imageUrl
- const productData = { nama, slug: slugify(nama), kategori, deskripsi, gambar: imageUrl };
-  if (id) {
-    await sb.from("produk").update(productData).eq("id", id);
-  } else {
-    await sb.from("produk").insert([productData]);
-  }
+      // sisanya: insert/update pakai imageUrl
+      const productData = {
+        nama,
+        slug: slugify(nama),
+        kategori,
+        deskripsi,
+        gambar: imageUrl,
+      };
+      if (id) {
+        await sb.from("produk").update(productData).eq("id", id);
+      } else {
+        await sb.from("produk").insert([productData]);
+      }
 
       resetForm();
+            showNotification('Produk berhasil diperbarui!', id ? 'Produk berhasil diperbarui!' : 'Produk berhasil ditambahkan!');
       await fetchProducts();
+
     } catch (error) {
-      alert("Terjadi kesalahan: " + error.message);
+      showNotification("error", "Terjadi kesalahan: " + error.message);
     } finally {
       document.getElementById("cancel-btn").classList.remove("hidden");
       submitBtn.disabled = false;
@@ -631,12 +663,12 @@ async function uploadImage(file) {
   const fileNameEl = document.getElementById("file-name");
   const imgPrev = document.getElementById("image-preview");
 
-  dropArea.addEventListener('click', e => {
-  // kalau kliknya langsung ke dropArea (bukan ke input yang transparan)
-  if (e.target === dropArea) {
-    fileInput.click();
-  }
-});
+  dropArea.addEventListener("click", (e) => {
+    // kalau kliknya langsung ke dropArea (bukan ke input yang transparan)
+    if (e.target === dropArea) {
+      fileInput.click();
+    }
+  });
   fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     if (file) {
@@ -669,8 +701,8 @@ async function uploadImage(file) {
       }
     });
   });
-    // Event listener untuk tombol Batal
-    const cancelBtn = document.getElementById("cancel-btn");
+  // Event listener untuk tombol Batal
+  const cancelBtn = document.getElementById("cancel-btn");
   cancelBtn.addEventListener("click", () => {
     resetForm();
     hideForm();
@@ -690,3 +722,75 @@ async function uploadImage(file) {
   fetchProducts();
 </script>
 
+<script type="module">
+  // Notification System
+  function showNotification(type, message) {
+    const container = document.getElementById("notification-container");
+
+    // Create notification element
+    const notification = document.createElement("div");
+    notification.className = `p-4 rounded-lg shadow-lg transform transition-all duration-300 ${
+      type === "success"
+        ? "bg-green-50 border-l-4 border-green-500 text-green-700"
+        : type === "error"
+          ? "bg-red-50 border-l-4 border-red-500 text-red-700"
+          : "bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700"
+    }`;
+
+    notification.innerHTML = `
+      <div class="flex items-start">
+        <svg class="h-6 w-6 mr-2 ${type === "success" ? "text-green-500" : type === "error" ? "text-red-500" : "text-yellow-500"}" 
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          ${
+            type === "success"
+              ? `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          `
+              : type === "error"
+                ? `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          `
+                : `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          `
+          }
+        </svg>
+        <div>${message}</div>
+      </div>
+    `;
+
+    // Add to container
+    container.appendChild(notification);
+
+    // Animate in
+    setTimeout(() => {
+      notification.classList.add("opacity-100", "translate-x-0");
+    }, 10);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      notification.classList.remove("opacity-100", "translate-x-0");
+      notification.classList.add("opacity-0", "translate-x-full");
+
+      setTimeout(() => {
+        container.removeChild(notification);
+      }, 300);
+    }, 5000);
+
+    // Manual close
+    notification.addEventListener("click", () => {
+      notification.classList.remove("opacity-100", "translate-x-0");
+      notification.classList.add("opacity-0", "translate-x-full");
+
+      setTimeout(() => {
+        container.removeChild(notification);
+      }, 300);
+    });
+  }
+
+  // Usage examples:
+  // showNotification('success', 'Produk berhasil disimpan!');
+  // showNotification('error', 'Gagal menyimpan produk');
+  // showNotification('warning', 'Periksa kembali data');
+</script>
