@@ -74,41 +74,88 @@ import Wapop from '../components/wapop.astro';
             </p>
           </div>
           
-          <div class="grid md:grid-cols-3 gap-8">
-            <div class="text-center">
-              <div class="rounded-full overflow-hidden w-32 h-32 mx-auto mb-4">
-                <img src="https://raw.githubusercontent.com/JaBreaK/kecoding.github.io/refs/heads/main/kiles.jpg" alt="Michael Chen" class="w-full h-full object-cover" />
-              </div>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Akhiles Salvadore</h3>
-              <p class="text-primary-600 dark:text-primary-400 mb-2">CEO & Co-Founder</p>
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
-                With over 15 years of experience in the tech industry, Michael leads our company with vision and passion.
-              </p>
-            </div>
-            
-            <div class="text-center">
-              <div class="rounded-full overflow-hidden w-32 h-32 mx-auto mb-4">
-                <img src="https://avatars.githubusercontent.com/u/114270384?v=4" alt="Sarah Johnson" class="w-full h-full object-cover" />
-              </div>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Jabreak</h3>
-              <p class="text-primary-600 dark:text-primary-400 mb-2">CTO & Co-Founder</p>
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
-                Technical expertise and innovative thinking drive our product development and technology strategy.
-              </p>
-            </div>
-            
-            <div class="text-center">
-              <div class="rounded-full overflow-hidden w-32 h-32 mx-auto mb-4">
-                <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="David Rodriguez" class="w-full h-full object-cover" />
-              </div>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Ijat</h3>
-              <p class="text-primary-600 dark:text-primary-400 mb-2">COO</p>
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
-                David ensures our operations run smoothly and efficiently, enabling us to deliver exceptional value to our customers.
-              </p>
-            </div>
-          </div>
-        </div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+  <!-- Item pertama: ambil satu kolom dan letakkan di kolom ke-2 -->
+  <div class="text-center md:col-start-2">
+    <div class="rounded-full overflow-hidden w-32 h-32 mx-auto mb-4">
+      <img
+        src="https://raw.githubusercontent.com/JaBreaK/kecoding.github.io/refs/heads/main/kiles.jpg"
+        alt="Akhiles Salvadore"
+        class="w-full h-full object-cover"
+      />
+    </div>
+    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+      Akhiles Salvadore
+    </h3>
+    <p class="text-primary-600 dark:text-primary-400 mb-2">
+      Direktur Utama & Co-Founder
+    </p>
+    <p class="text-gray-600 dark:text-gray-300 text-sm">
+      Dengan pengalaman lebih dari 15 tahun di industri teknologi, Akhiles memimpin perusahaan dengan visi strategis dan dedikasi tinggi.
+    </p>
+  </div>
+
+  <!-- Item ke-2: paksa mulai di kolom 1, baris 2 -->
+  <div class="text-center md:col-start-1 md:row-start-2">
+    <div class="rounded-full overflow-hidden w-32 h-32 mx-auto mb-4">
+      <img
+        src="https://avatars.githubusercontent.com/u/114270384?v=4"
+        alt="Jabreak"
+        class="w-full h-full object-cover"
+      />
+    </div>
+    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+      Jabreak
+    </h3>
+    <p class="text-primary-600 dark:text-primary-400 mb-2">
+      Kepala Teknologi & Co-Founder
+    </p>
+    <p class="text-gray-600 dark:text-gray-300 text-sm">
+      Keahlian teknis dan pemikiran inovatif Jabreak mendorong pengembangan produk serta strategi teknologi kami.
+    </p>
+  </div>
+
+  <!-- Item ke-3: paksa mulai di kolom 2, baris 2 -->
+  <div class="text-center md:col-start-2 md:row-start-2">
+    <div class="rounded-full overflow-hidden w-32 h-32 mx-auto mb-4">
+      <img
+        src="https://randomuser.me/api/portraits/men/67.jpg"
+        alt="Ijat"
+        class="w-full h-full object-cover"
+      />
+    </div>
+    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+      Ijat
+    </h3>
+    <p class="text-primary-600 dark:text-primary-400 mb-2">
+      Kepala Operasional (COO)
+    </p>
+    <p class="text-gray-600 dark:text-gray-300 text-sm">
+      Ijat memastikan seluruh operasional perusahaan berjalan efisien dan terkoordinasi, sehingga kami dapat memberikan layanan terbaik bagi klien.
+    </p>
+  </div>
+
+  <!-- Item ke-4: paksa mulai di kolom 3, baris 2 -->
+  <div class="text-center md:col-start-3 md:row-start-2">
+    <div class="rounded-full overflow-hidden w-32 h-32 mx-auto mb-4">
+      <img
+        src="https://raw.githubusercontent.com/JaBreaK/db/refs/heads/main/neja.png"
+        alt="Neja"
+        class="w-full h-full object-cover"
+      />
+    </div>
+    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+      Neja
+    </h3>
+    <p class="text-primary-600 dark:text-primary-400 mb-2">
+      Manajer Proyek
+    </p>
+    <p class="text-gray-600 dark:text-gray-300 text-sm">
+      Neja bertanggung jawab mengelola setiap tahap proyek secara profesional agar hasil akhirnya selalu sesuai standar dan tepat waktu.
+    </p>
+  </div>
+</div>
+
         
         
     </section>
