@@ -106,7 +106,8 @@
 
     document.getElementById("search-input").addEventListener("input", (e) => { searchTerm = e.target.value.trim().toLowerCase(); currentPage = 1; renderProductsPage(); });
 
-    document.getElementById("add-btn").addEventListener("click", () => { resetForm(); showForm();  });
+    document.getElementById("add-btn").addEventListener("click", () => { resetForm(); document.getElementById("cancel-btn").classList.remove("hidden");
+ showForm();  });
     document.getElementById("cancel-btn").addEventListener("click", () => { resetForm(); hideForm(); });
 
     grid.addEventListener("click", async (e) => { if (e.target.matches(".edit-btn")) await enterEdit(e.target.dataset.id); if (e.target.matches(".delete-btn")) await deleteProduct(e.target.dataset.id); });
