@@ -1,9 +1,8 @@
-<!-- Minimal animated dark-only carousel with plain JavaScript and Tailwind CSS -->
-
+<!-- Minimal animated dark-only carousel dengan plain JavaScript, Tailwind CSS, dan kompatibel Turbo -->
 <section id="hero-carousel" class="relative overflow-hidden h-screen hero-section">
   <!-- Slides Container -->
   <div id="slides" class="absolute inset-0">
-    <!-- Slides will be injected here -->
+    <!-- Slides akan di-inject di sini -->
   </div>
 
   <!-- Dark Overlay for Contrast -->
@@ -26,13 +25,30 @@
 </section>
 
 <script type="module">
-  document.addEventListener('DOMContentLoaded', function () {
+  // Simpan referensi interval dan status slide di luar fungsi, supaya bisa di-clear sebelum inisiasi ulang
+  let carouselIntervalId = null;
+  let carouselCurrentIndex = 0;
+
+  function initHeroCarousel() {
+    // Jika sebelumnya sudah ada interval berjalan, bersihkan dulu
+    if (carouselIntervalId) {
+      clearInterval(carouselIntervalId);
+      carouselIntervalId = null;
+    }
     const slideCount = 3; // jumlah slide, ubah sesuai kebutuhan
     const slidesContainer = document.getElementById('slides');
-    let currentIndex = 0;
-    let intervalId;
+    if (!slidesContainer) {
+      console.warn('Hero carousel: elemen #slides tidak ditemukan');
+      return;
+    }
 
-    // Generate only dark-mode slides
+    // Sebelum inisiasi ulang, kosongkan kontainer slide agar tidak duplikat slide lama
+    slidesContainer.innerHTML = '';
+
+    // Reset index
+    carouselCurrentIndex = 0;
+
+    // Generate hanya dark-mode slides
     for (let i = 1; i <= slideCount; i++) {
       const div = document.createElement('div');
       div.className = 'absolute inset-0 bg-center bg-cover filter blur-[3px] opacity-0 transition-opacity duration-1000';
@@ -43,21 +59,55 @@
 
     function showSlide(index) {
       const slides = slidesContainer.children;
+      if (!slides || slides.length === 0) return;
       for (const slide of slides) {
         slide.classList.remove('opacity-100');
         slide.classList.add('opacity-0');
       }
-      slides[index].classList.remove('opacity-0');
-      slides[index].classList.add('opacity-100');
-      currentIndex = index;
+      // Pastikan index valid
+      const idx = index % slides.length;
+      slides[idx].classList.remove('opacity-0');
+      slides[idx].classList.add('opacity-100');
+      carouselCurrentIndex = idx;
     }
 
     function nextSlide() {
-      showSlide((currentIndex + 1) % slideCount);
+      showSlide((carouselCurrentIndex + 1) % slideCount);
     }
 
-    // Initialize
+    // Initialize tampilan pertama
     showSlide(0);
-    intervalId = setInterval(nextSlide, 5000);
+    // Set interval
+    carouselIntervalId = setInterval(nextSlide, 5000);
+  }
+
+  // Bersihkan sebelum Turbo cache halaman
+  function cleanupHeroCarousel() {
+    // Hentikan interval
+    if (carouselIntervalId) {
+      clearInterval(carouselIntervalId);
+      carouselIntervalId = null;
+    }
+    // Kosongkan slides agar Turbo tidak menyimpan elemen lama
+    const slidesContainer = document.getElementById('slides');
+    if (slidesContainer) {
+      slidesContainer.innerHTML = '';
+    }
+  }
+
+  // Jika menggunakan Turbo Drive, pasang listener berikut:
+  document.addEventListener('turbo:load', function() {
+    initHeroCarousel();
+  });
+
+  // Sebelum Turbo menyimpan cache snapshot, bersihkan state yang bersifat runtime
+  document.addEventListener('turbo:before-cache', function() {
+    cleanupHeroCarousel();
+  });
+
+  // Juga, jika pengguna membuka halaman secara langsung (initial load tanpa Turbo),
+  // kadang DOMContentLoaded tetap perlu:
+  document.addEventListener('DOMContentLoaded', function () {
+    initHeroCarousel();
   });
 </script>
