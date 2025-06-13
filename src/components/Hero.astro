@@ -1,33 +1,63 @@
-<section class="relative pt-32 pb-20 md:pt-40 overflow-hidden hero-section">
-  <!-- Background Elements -->
-  <div data-animate="fade-up" data-delay="100" class="absolute inset-0 z-0">
-    <!-- Mode Terang -->
-    <div class="absolute inset-0 bg-[url('https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-LIGHT.jpg')] bg-cover bg-center dark:hidden"></div>
+<!-- Minimal animated dark-only carousel with plain JavaScript and Tailwind CSS -->
 
-    <!-- Mode Gelap -->
-    <div class="absolute inset-0 bg-[url('https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-DARK.jpg')] bg-cover bg-center hidden dark:block"></div>
+<section id="hero-carousel" class="relative overflow-hidden h-screen hero-section">
+  <!-- Slides Container -->
+  <div id="slides" class="absolute inset-0">
+    <!-- Slides will be injected here -->
   </div>
 
-  <div class="container-custom relative z-10">
-    <div class="flex flex-col items-start text-left gap-12">
-      <div class="slide-up" transition:animate="slide">
-        <h1 class="text-4xl sm:text-6xl md:text-7xl leading-tight font-bold">
-          <span class="font-brand1 text-[#D4AF37]">DYE</span>
-          <span class="font-display text-black dark:text-white">
-            APPAREL
-          </span>
-        </h1>
+  <!-- Dark Overlay for Contrast -->
+  <div class="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
 
-        <p class="w-full max-w-lg text-xl text-secondary-900 dark:text-white mb-8">
-          Custom Tanpa Batas 
-        </p>
-
-        <div class="flex flex-wrap">
-          <a href="https://wa.me/c/6289601651641" target="_blank" class="btn-outline text-secondary-900 dark:text-white flex items-center hover:bg-[#D4AF37]/10">
-            Custom Sekarang
-          </a>
-        </div>
-      </div>
+  <!-- Content -->
+  <div class="relative z-10 container-custom flex items-center justify-center h-full">
+    <!-- Hero Content -->
+    <div class="text-white text-center px-4">
+      <h1 class="text-4xl sm:text-6xl font-bold">
+        <span class="font-brand1 text-[#D4AF37]">DYE</span>
+        <span class="font-display">APPAREL</span>
+      </h1>
+      <p class="mt-4 text-xl">Custom Tanpa Batas</p>
+      <a href="https://wa.me/c/6289601651641" target="_blank" class="mt-6 inline-block btn-outline">
+        Custom Sekarang
+      </a>
     </div>
   </div>
 </section>
+
+<script type="module">
+  document.addEventListener('DOMContentLoaded', function () {
+    const slideCount = 3; // jumlah slide, ubah sesuai kebutuhan
+    const slidesContainer = document.getElementById('slides');
+    let currentIndex = 0;
+    let intervalId;
+
+    // Generate only dark-mode slides
+    for (let i = 1; i <= slideCount; i++) {
+      const div = document.createElement('div');
+      div.className = 'absolute inset-0 bg-center bg-cover filter blur-[3px] opacity-0 transition-opacity duration-1000';
+      div.dataset.index = i - 1;
+      div.style.backgroundImage = `url(https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-DARK-${i}.jpg)`;
+      slidesContainer.appendChild(div);
+    }
+
+    function showSlide(index) {
+      const slides = slidesContainer.children;
+      for (const slide of slides) {
+        slide.classList.remove('opacity-100');
+        slide.classList.add('opacity-0');
+      }
+      slides[index].classList.remove('opacity-0');
+      slides[index].classList.add('opacity-100');
+      currentIndex = index;
+    }
+
+    function nextSlide() {
+      showSlide((currentIndex + 1) % slideCount);
+    }
+
+    // Initialize
+    showSlide(0);
+    intervalId = setInterval(nextSlide, 5000);
+  });
+</script>
