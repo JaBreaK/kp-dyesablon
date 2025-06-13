@@ -1,14 +1,16 @@
+<!-- Minimal animated dark-only carousel dengan plain JavaScript, Tailwind CSS, dan kompatibel Turbo -->
 <section id="hero-carousel" class="relative overflow-hidden h-screen hero-section">
   <!-- Slides Container -->
   <div id="slides" class="absolute inset-0">
-    <!-- Slides akan di-inject di sini setelah preload -->
+    <!-- Slides akan di-inject di sini -->
   </div>
 
   <!-- Dark Overlay for Contrast -->
-  <div class="absolute inset-0 bg-black/30 dark:bg-black/50 pointer-events-none"></div>
+  <div class="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
 
   <!-- Content -->
   <div class="relative z-10 container-custom flex items-center justify-center h-full">
+    <!-- Hero Content -->
     <div class="text-white text-center px-4">
       <h1 class="text-4xl sm:text-6xl font-bold">
         <span class="font-brand1 text-[#D4AF37]">DYE</span>
@@ -23,133 +25,84 @@
 </section>
 
 <script type="module">
+  // Simpan referensi interval dan status slide di luar fungsi, supaya bisa di-clear sebelum inisiasi ulang
   let carouselIntervalId = null;
   let carouselCurrentIndex = 0;
-  // Jumlah slide
-  const slideCount = 3;
-  // Buat array URL slide
-  const slideUrls = Array.from({ length: slideCount }, (_, i) =>
-    `https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-DARK-${i + 1}.jpg`
-  );
-
-  // Preload images, kembalikan promise yang resolve dengan URL jika berhasil, null jika gagal
-  function preloadImages(urls) {
-    const promises = urls.map((url) =>
-      new Promise((resolve) => {
-        const img = new Image();
-        img.src = url;
-        img.onload = () => resolve(url);
-        img.onerror = () => {
-          console.warn('Gagal load image:', url);
-          resolve(null);
-        };
-      })
-    );
-    return Promise.all(promises);
-  }
 
   function initHeroCarousel() {
-    // Hentikan interval lama jika ada
+    // Jika sebelumnya sudah ada interval berjalan, bersihkan dulu
     if (carouselIntervalId) {
       clearInterval(carouselIntervalId);
       carouselIntervalId = null;
     }
+    const slideCount = 3; // jumlah slide, ubah sesuai kebutuhan
     const slidesContainer = document.getElementById('slides');
     if (!slidesContainer) {
       console.warn('Hero carousel: elemen #slides tidak ditemukan');
       return;
     }
-    // Kosongkan kontainer agar tidak duplikat
+
+    // Sebelum inisiasi ulang, kosongkan kontainer slide agar tidak duplikat slide lama
     slidesContainer.innerHTML = '';
+
+    // Reset index
     carouselCurrentIndex = 0;
 
-    // Preload dulu
-    preloadImages(slideUrls).then((loadedUrls) => {
-      // Buat slide div untuk tiap URL
-      loadedUrls.forEach((url, idx) => {
-        const div = document.createElement('div');
-        // Tambahkan kelas blur dan transition
-        div.className =
-          'absolute inset-0 bg-center bg-cover filter blur-[3px] opacity-0 transition-opacity duration-1000';
-        // Pasang inline style untuk optimisasi rendering
-        // will-change dan transform untuk memaku layer
-        div.style.willChange = 'opacity';
-        div.style.transform = 'translateZ(0)';
-        // Atur z-index: slide awal (idx=0) bisa z-index 1, berikutnya 0, nanti update saat show
-        div.style.zIndex = idx === 0 ? '1' : '0';
-        div.dataset.index = idx;
-        if (url) {
-          div.style.backgroundImage = `url(${url})`;
-        } else {
-          // fallback jika gagal load
-          div.style.backgroundColor = '#111';
-        }
-        // Jika ini slide pertama (idx 0), tampilkan langsung
-        if (idx === 0) {
-          div.classList.remove('opacity-0');
-          div.classList.add('opacity-100');
-        }
-        slidesContainer.appendChild(div);
-      });
+    // Generate hanya dark-mode slides
+    for (let i = 1; i <= slideCount; i++) {
+      const div = document.createElement('div');
+      div.className = 'absolute inset-0 bg-center bg-cover filter blur-[3px] opacity-0 transition-opacity duration-1000';
+      div.dataset.index = i - 1;
+      div.style.backgroundImage = `url(https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-DARK-${i}.jpg)`;
+      slidesContainer.appendChild(div);
+    }
 
+    function showSlide(index) {
       const slides = slidesContainer.children;
-      const totalSlides = slides.length;
-      if (totalSlides === 0) {
-        console.warn('Tidak ada slide setelah preload');
-        return;
+      if (!slides || slides.length === 0) return;
+      for (const slide of slides) {
+        slide.classList.remove('opacity-100');
+        slide.classList.add('opacity-0');
       }
+      // Pastikan index valid
+      const idx = index % slides.length;
+      slides[idx].classList.remove('opacity-0');
+      slides[idx].classList.add('opacity-100');
+      carouselCurrentIndex = idx;
+    }
 
-      function showSlide(index) {
-        const prevIdx = carouselCurrentIndex;
-        const newIdx = ((index % totalSlides) + totalSlides) % totalSlides;
-        if (newIdx === prevIdx) return;
-        const prevSlide = slides[prevIdx];
-        const nextSlide = slides[newIdx];
+    function nextSlide() {
+      showSlide((carouselCurrentIndex + 1) % slideCount);
+    }
 
-        // Turunkan z-index slide lama ke 0 setelah fade out
-        prevSlide.classList.remove('opacity-100');
-        prevSlide.classList.add('opacity-0');
-        prevSlide.style.zIndex = '0';
-
-        // Tampilkan slide baru di atas
-        nextSlide.style.zIndex = '1';
-        // Beri sedikit delay minimal supaya z-index diterapkan sebelum opacity
-        // Namun karena transition opacity di-handle CSS, ini cukup:
-        nextSlide.classList.remove('opacity-0');
-        nextSlide.classList.add('opacity-100');
-
-        carouselCurrentIndex = newIdx;
-      }
-
-      function nextSlide() {
-        showSlide(carouselCurrentIndex + 1);
-      }
-
-      // Mulai interval
-      carouselIntervalId = setInterval(nextSlide, 5000);
-    });
+    // Initialize tampilan pertama
+    showSlide(0);
+    // Set interval
+    carouselIntervalId = setInterval(nextSlide, 5000);
   }
 
+  // Bersihkan sebelum Turbo cache halaman
   function cleanupHeroCarousel() {
+    // Hentikan interval
     if (carouselIntervalId) {
       clearInterval(carouselIntervalId);
       carouselIntervalId = null;
     }
+    // Kosongkan slides agar Turbo tidak menyimpan elemen lama
     const slidesContainer = document.getElementById('slides');
     if (slidesContainer) {
       slidesContainer.innerHTML = '';
     }
   }
 
-  // Jika memakai Turbo Drive/Hotwire:
-  document.addEventListener('turbo:load', () => {
+  // Jika menggunakan Turbo Drive, pasang listener berikut:
+  document.addEventListener('turbo:load', function() {
     initHeroCarousel();
   });
-  document.addEventListener('turbo:before-cache', () => {
-    cleanupHeroCarousel();
-  });
-  // Fallback load awal
-  document.addEventListener('DOMContentLoaded', () => {
+
+  // Juga, jika pengguna membuka halaman secara langsung (initial load tanpa Turbo),
+  // kadang DOMContentLoaded tetap perlu:
+  document.addEventListener('DOMContentLoaded', function () {
     initHeroCarousel();
   });
 </script>
