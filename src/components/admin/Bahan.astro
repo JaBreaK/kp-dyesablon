@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bahan Manager Supabase</title>
+  <!-- Tailwind CSS via CDN atau build pipeline -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+
+  <div class="flex flex-col lg:flex-row gap-6">
+    <!-- Daftar bahan/kartu -->
+    <div id="bahan-container" class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- JS akan render di sini -->
+    </div>
+
+    <!-- Side form untuk tambah/edit -->
+    <div class="w-full lg:w-96 bg-white rounded-lg shadow p-4">
+      <h3 id="form-title" class="text-lg font-medium text-gray-800 mb-4">Tambah Bahan</h3>
+      <form id="bahan-form" class="flex flex-col space-y-3">
+        <!-- Hidden field untuk id (edit) -->
+        <input type="hidden" id="bahan-id" />
+        <div>
+          <label for="bahan-nama" class="block text-sm font-medium text-gray-700">Nama Bahan</label>
+          <input type="text" name="nama" id="bahan-nama"
+                 class="mt-1 w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                 placeholder="Masukkan nama bahan" />
+        </div>
+        <div>
+          <label for="bahan-desk" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+          <textarea name="desk" id="bahan-desk" rows="3"
+                    class="mt-1 w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Masukkan deskripsi bahan"></textarea>
+        </div>
+        <div>
+          <label for="bahan-gambar" class="block text-sm font-medium text-gray-700">Pilih Gambar (opsional)</label>
+          <input type="file" accept="image/*" name="gambar" id="bahan-gambar"
+                 class="mt-1 w-full" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Preview Gambar</label>
+          <img id="bahan-preview" src="" alt="Preview"
+               class="w-full h-40 object-cover rounded border mt-1 bg-gray-50" />
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" id="btn-reset"
+                  class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400">Reset</button>
+          <button type="submit" id="btn-submit"
+                  class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Script Supabase & logic -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    // ======= KONFIGURASI: Ganti sesuai project Anda =======
+    const SUPABASE_URL = 'https://pmfzypvynmyotmvbgafi.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM'; // <-- Ganti dengan anon key Anda
+    const BUCKET_NAME = 'images';       // bucket Supabase Storage
+    const FOLDER = 'bahan';             // subfolder untuk bahan
+    const TABLE_NAME = 'bahan';         // nama tabel bahan
+    // Fallback image jika kolom gambar kosong:
+    const DEFAULT_IMAGE_URL = 'https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-DARK-1.jpg';
+    // =====================================================
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Elemen DOM
+    const container = document.getElementById('bahan-container');
+    const form = document.getElementById('bahan-form');
+    const formTitle = document.getElementById('form-title');
+    const inputId = document.getElementById('bahan-id');
+    const inputNama = document.getElementById('bahan-nama');
+    const inputDesk = document.getElementById('bahan-desk');
+    const inputGambar = document.getElementById('bahan-gambar');
+    const previewImg = document.getElementById('bahan-preview');
+    const btnReset = document.getElementById('btn-reset');
+    const btnSubmit = document.getElementById('btn-submit');
+
+    let bahanList = [];
+
+    // Prefix public URL Supabase Storage:
+    // e.g. 'https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/'
+    const STORAGE_PUBLIC_BASE = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/`;
+
+    // Utility: parse path di Storage dari public URL
+    // Jika URL: "https://.../storage/v1/object/public/images/bahan/xxx.png"
+    // Maka return: "bahan/xxx.png"
+    function parsePathFromUrl(url) {
+      if (!url || typeof url !== 'string') return null;
+      if (url.startsWith(STORAGE_PUBLIC_BASE)) {
+        return url.substring(STORAGE_PUBLIC_BASE.length);
+      }
+      return null;
+    }
+
+    // Resolve URL gambar:
+    // - Jika kosong/null: pakai DEFAULT_IMAGE_URL
+    // - Jika sudah http/https: return langsung
+    // - Jika path saja: bangun publicUrl via STORAGE_PUBLIC_BASE
+    function resolveImageUrl(gambarField) {
+      if (!gambarField) return DEFAULT_IMAGE_URL;
+      if (typeof gambarField === 'string' && (gambarField.startsWith('http://') || gambarField.startsWith('https://'))) {
+        return gambarField;
+      }
+      // Jika menyimpan path saja (misal 'bahan/xxx.png'), kembalikan STORAGE_PUBLIC_BASE + path
+      return STORAGE_PUBLIC_BASE + gambarField;
+    }
+
+    // 1. Fetch data bahan dari tabel
+    async function fetchBahan() {
+      container.innerHTML = '<p class="text-gray-500">Loading...</p>';
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select('*')
+        .order('nama', { ascending: true });
+      if (error) {
+        console.error('Error fetch bahan:', error);
+        container.innerHTML = `<p class="text-red-500">Gagal memuat data bahan: ${error.message}</p>`;
+        return;
+      }
+      bahanList = data;
+      renderBahan();
+    }
+
+    // 2. Render daftar bahan ke DOM
+    function renderBahan() {
+      container.innerHTML = '';
+      if (!bahanList || bahanList.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">Belum ada data bahan.</p>';
+        return;
+      }
+      bahanList.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-lg shadow p-4 flex flex-col';
+
+        // Gambar
+        const img = document.createElement('img');
+        img.src = resolveImageUrl(item.gambar);
+        img.alt = item.nama || 'bahan';
+        img.className = 'w-full h-40 object-cover rounded';
+        card.appendChild(img);
+
+        // Nama/title
+        const h3 = document.createElement('h3');
+        h3.className = 'mt-2 text-lg font-semibold text-gray-800';
+        h3.textContent = item.nama || '(no name)';
+        card.appendChild(h3);
+
+        // Deskripsi singkat (potong jika terlalu panjang)
+        const p = document.createElement('p');
+        p.className = 'mt-1 text-sm text-gray-600 flex-1';
+        // Jika deskripsi panjang, potong 100 karakter dan tambahkan "..."
+        const deskText = item.desk || '';
+        p.textContent = deskText.length > 100 ? deskText.slice(0, 100) + '...' : deskText;
+        card.appendChild(p);
+
+        // Tombol edit & delete
+        const btnContainer = document.createElement('div');
+        btnContainer.className = 'mt-2 flex justify-end space-x-2';
+
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600';
+        btnEdit.textContent = 'Edit';
+        btnEdit.addEventListener('click', () => openEditForm(item));
+        btnContainer.appendChild(btnEdit);
+
+        const btnDel = document.createElement('button');
+        btnDel.className = 'px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600';
+        btnDel.textContent = 'Hapus';
+        btnDel.addEventListener('click', () => deleteBahan(item.id, item.gambar));
+        btnContainer.appendChild(btnDel);
+
+        card.appendChild(btnContainer);
+        container.appendChild(card);
+      });
+    }
+
+    // 3. Buka form edit: isi input, simpan URL lama di dataset, ubah tampilan form
+    function openEditForm(item) {
+      inputId.value = item.id;
+      inputNama.value = item.nama || '';
+      inputDesk.value = item.desk || '';
+      previewImg.src = resolveImageUrl(item.gambar);
+      inputGambar.value = '';
+      // Simpan URL lama:
+      form.dataset.oldUrl = item.gambar || '';
+      // Ubah judul form
+      formTitle.textContent = 'Edit Bahan';
+      // Scroll ke form
+      form.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 4. Reset form ke state tambah
+    function resetForm() {
+      inputId.value = '';
+      inputNama.value = '';
+      inputDesk.value = '';
+      inputGambar.value = '';
+      previewImg.src = '';
+      delete form.dataset.oldUrl;
+      formTitle.textContent = 'Tambah Bahan';
+    }
+    btnReset.addEventListener('click', resetForm);
+
+    // 5. Preview saat pilih file
+    inputGambar.addEventListener('change', () => {
+      const file = inputGambar.files[0];
+      if (file) {
+        previewImg.src = URL.createObjectURL(file);
+      } else {
+        // Jika batal pilih, kembali ke gambar lama jika ada
+        if (form.dataset.oldUrl) {
+          previewImg.src = resolveImageUrl(form.dataset.oldUrl);
+        } else {
+          previewImg.src = '';
+        }
+      }
+    });
+
+    // 6. Submit form: tambah atau edit
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = inputId.value;
+      const nama = inputNama.value.trim();
+      const desk = inputDesk.value.trim();
+      const file = inputGambar.files[0];
+
+      if (!nama) {
+        alert('Nama bahan harus diisi');
+        return;
+      }
+      if (!desk) {
+        alert('Deskripsi bahan harus diisi');
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = id ? 'Menyimpan...' : 'Menambah...';
+
+      try {
+        if (!id) {
+          // Tambah baru
+          await tambahBahan(nama, desk, file);
+          alert('Bahan berhasil ditambahkan');
+        } else {
+          // Edit existing
+          await editBahan(id, nama, desk, file);
+          alert('Bahan berhasil diupdate');
+        }
+        resetForm();
+        fetchBahan();
+      } catch (err) {
+        console.error('Error submit bahan:', err);
+        alert('Gagal menyimpan: ' + err.message);
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Submit';
+      }
+    });
+
+    // 7. Fungsi tambahBahan
+    async function tambahBahan(nama, desk, file) {
+      let publicUrl = null;
+      if (file) {
+        // Upload file ke Storage bucket 'images', folder 'bahan'
+        const fileExt = file.name.split('.').pop();
+        const safeName = nama.toLowerCase()
+                             .replace(/\s+/g, '-')
+                             .replace(/[^a-z0-9\-]/g, '');
+        const timestamp = Date.now();
+        const filePath = `${FOLDER}/${safeName}-${timestamp}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await supabase
+          .storage
+          .from(BUCKET_NAME)
+          .upload(filePath, file, { cacheControl: '3600', upsert: false });
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl: pu }, error: urlError } = supabase
+          .storage
+          .from(BUCKET_NAME)
+          .getPublicUrl(uploadData.path);
+        if (urlError) console.warn('Gagal dapat publicUrl:', urlError);
+        publicUrl = pu;
+      }
+      // Insert ke tabel bahan: simpan publicUrl atau null jika tidak upload
+      const insertObj = { nama, desk };
+      if (publicUrl) insertObj.gambar = publicUrl;
+      const { error: insertError } = await supabase
+        .from(TABLE_NAME)
+        .insert(insertObj);
+      if (insertError) throw insertError;
+    }
+
+    // 8. Fungsi editBahan
+    async function editBahan(id, nama, desk, file) {
+      let updateObj = { nama, desk };
+      let newPath = null;
+
+      if (file) {
+        // Upload file baru
+        const fileExt = file.name.split('.').pop();
+        const safeName = nama.toLowerCase()
+                             .replace(/\s+/g, '-')
+                             .replace(/[^a-z0-9\-]/g, '');
+        const timestamp = Date.now();
+        const filePath = `${FOLDER}/${safeName}-${timestamp}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await supabase
+          .storage
+          .from(BUCKET_NAME)
+          .upload(filePath, file, { cacheControl: '3600', upsert: false });
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl: pu }, error: urlError } = supabase
+          .storage
+          .from(BUCKET_NAME)
+          .getPublicUrl(uploadData.path);
+        if (urlError) console.warn('Gagal dapat publicUrl new file:', urlError);
+
+        newPath = uploadData.path;
+        updateObj.gambar = pu;
+      }
+      // Update row
+      const { error: updateError } = await supabase
+        .from(TABLE_NAME)
+        .update(updateObj)
+        .eq('id', id);
+      if (updateError) throw updateError;
+
+      // Jika ada file lama dan upload baru, hapus file lama di Storage
+      if (file && form.dataset.oldUrl) {
+        const oldUrl = form.dataset.oldUrl;
+        const oldPath = parsePathFromUrl(oldUrl);
+        if (oldPath) {
+          const { error: delErr } = await supabase
+            .storage
+            .from(BUCKET_NAME)
+            .remove([oldPath]);
+          if (delErr) console.warn('Gagal hapus file lama:', delErr);
+        }
+      }
+    }
+
+    // 9. Fungsi deleteBahan
+    async function deleteBahan(id, gambarField) {
+      if (!confirm('Yakin ingin menghapus bahan ini?')) return;
+      // Hapus row dari tabel
+      const { error: delRecErr } = await supabase
+        .from(TABLE_NAME)
+        .delete()
+        .eq('id', id);
+      if (delRecErr) {
+        console.error('Error delete record:', delRecErr);
+        alert('Gagal menghapus bahan: ' + delRecErr.message);
+        return;
+      }
+      // Hapus file di Storage bila URL milik Storage
+      const oldPath = parsePathFromUrl(gambarField);
+      if (oldPath) {
+        const { error: delFileErr } = await supabase
+          .storage
+          .from(BUCKET_NAME)
+          .remove([oldPath]);
+        if (delFileErr) console.warn('Gagal hapus file storage:', delFileErr);
+      }
+      alert('Bahan dihapus');
+      fetchBahan();
+    }
+
+    // 10. Inisialisasi: fetch data awal
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchBahan();
+    });
+  </script>
+
+</html>

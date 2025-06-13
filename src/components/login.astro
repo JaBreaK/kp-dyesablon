@@ -4,74 +4,103 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Staff Login</title>
-    <!-- Animations CSS -->
     <style>
       @keyframes fade-in-up {
         0% { opacity: 0; transform: translateY(20px); }
         100% { opacity: 1; transform: translateY(0); }
       }
       .animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
-    </style>
-    <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  const supabaseUrl = 'https://pmfzypvynmyotmvbgafi.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM';
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  document.addEventListener('DOMContentLoaded', () => {
-    // 1) Cek custom session: kalau ada, redirect ke /admin
-    const staffSession = localStorage.getItem('staffSession');
-    if (staffSession) {
-      window.location.href = '/admin';
-      return;
-    }
-
-    // 2) Setup form login
-    const form = document.querySelector('.login-form');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const errorMsg = document.createElement('p');
-    errorMsg.id = 'error-msg';
-    errorMsg.className = 'text-red-500 text-sm mt-2 hidden';
-    form.appendChild(errorMsg);
-
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      errorMsg.textContent = '';
-      errorMsg.classList.add('hidden');
-
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-
-      // 3) Query staff table
-      const { data, error } = await supabase
-        .from('staff')
-        .select('id, username')
-        .eq('username', username)
-        .eq('password', password)
-        .single();
-
-      if (error || !data) {
-        // either no match or an error
-        errorMsg.textContent = 'Invalid username or password';
-        errorMsg.classList.remove('hidden');
-      } else {
-        // 4) Save custom session and redirect
-        localStorage.setItem('staffSession', JSON.stringify({
-          id: data.id,
-          username: data.username,
-          loggedAt: new Date().toISOString()
-        }));
-        window.location.href = '/admin';
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #3b82f6;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 9999px;
+        transition: all 0.3s ease;
+        background-color: rgba(59, 130, 246, 0.1);
       }
-    });
-  });
-</script>
 
+      .back-btn:hover {
+        background-color: rgba(59, 130, 246, 0.2);
+        transform: translateX(-4px);
+      }
+
+      .back-btn svg {
+        transition: transform 0.3s ease;
+      }
+
+      .back-btn:hover svg {
+        transform: translateX(-3px);
+      }
+    </style>
+
+    <script type="module">
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+      const supabaseUrl = 'https://pmfzypvynmyotmvbgafi.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM';
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const staffSession = localStorage.getItem('staffSession');
+        if (staffSession) {
+          window.location.href = '/admin';
+          return;
+        }
+
+        const form = document.querySelector('.login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.createElement('p');
+        errorMsg.id = 'error-msg';
+        errorMsg.className = 'text-red-500 text-sm mt-2 hidden';
+        form.appendChild(errorMsg);
+
+        form.addEventListener('submit', async e => {
+          e.preventDefault();
+          errorMsg.textContent = '';
+          errorMsg.classList.add('hidden');
+
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+
+          const { data, error } = await supabase
+            .from('staff')
+            .select('id, email')
+            .eq('email', email)
+            .eq('password', password)
+            .single();
+
+          if (error || !data) {
+            errorMsg.textContent = 'Email atau password salah';
+            errorMsg.classList.remove('hidden');
+          } else {
+            localStorage.setItem('staffSession', JSON.stringify({
+              id: data.id,
+              email: data.email,
+              loggedAt: new Date().toISOString()
+            }));
+            window.location.href = '/admin';
+          }
+        });
+      });
+    </script>
   </head>
 
   <body class="bg-gradient-to-br from-[#f5f7fa] to-[#c3cfe2]">
+    <a href="/" class="back-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to Home
+    </a>
+
     <main class="min-h-screen flex items-center justify-center p-4">
       <div class="bg-white rounded-xl shadow-2xl p-8 md:p-10 w-full max-w-md transform -translate-y-5 animate-fade-in-up">
         <div class="text-center mb-8">
@@ -89,11 +118,11 @@
 
         <form class="login-form space-y-6">
           <div>
-            <label for="username" class="block text-sm font-medium text-slate-700 mb-2">Username</label>
+            <label for="email" class="block text-sm font-medium text-slate-700 mb-2">Email</label>
             <input 
-              id="username" 
-              type="text" 
-              placeholder="Enter your username" 
+              id="email" 
+              type="email" 
+              placeholder="Enter your email" 
               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg 
                      focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
                      transition-all duration-300 outline-none 
@@ -125,6 +154,10 @@
             Sign In
             <span class="group-hover:translate-x-1 transition-transform duration-200 group-hover:animate-bounce">→</span>
           </button>
+
+          <p class="text-center text-sm text-gray-500 mt-4">
+            <a href="/recovery" class="text-blue-600 hover:underline">Lupa password?</a>
+          </p>
         </form>
       </div>
     </main>

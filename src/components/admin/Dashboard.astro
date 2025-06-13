@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Statistik</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+
+
+  <main class="flex-1 overflow-auto">
+    <div class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+
+      <!-- Ringkasan Statistik -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Banner -->
+        <div class="bg-white rounded-lg shadow p-6 flex flex-col">
+          <h2 class="text-lg font-semibold text-gray-700">Total Banner</h2>
+          <p id="count-banner" class="mt-4 text-3xl font-bold text-blue-600">–</p>
+        </div>
+        <!-- Koleksi -->
+        <div class="bg-white rounded-lg shadow p-6 flex flex-col">
+          <h2 class="text-lg font-semibold text-gray-700">Total Koleksi</h2>
+          <p id="count-koleksi" class="mt-4 text-3xl font-bold text-green-600">–</p>
+        </div>
+        <!-- Bahan -->
+        <div class="bg-white rounded-lg shadow p-6 flex flex-col">
+          <h2 class="text-lg font-semibold text-gray-700">Total Bahan</h2>
+          <p id="count-bahan" class="mt-4 text-3xl font-bold text-red-600">–</p>
+        </div>
+        <!-- Produk -->
+        <div class="bg-white rounded-lg shadow p-6 flex flex-col">
+          <h2 class="text-lg font-semibold text-gray-700">Total Produk</h2>
+          <p id="count-produk" class="mt-4 text-3xl font-bold text-indigo-600">–</p>
+        </div>
+      </section>
+
+      <!-- Pie Chart Komposisi Total -->
+      <section class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Komposisi Total Items</h2>
+        <div class="relative h-64">
+          <canvas id="chart-komposisi"></canvas>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Script Supabase & logic -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    // ======= KONFIGURASI SUPABASE =======
+    const SUPABASE_URL = 'https://pmfzypvynmyotmvbgafi.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM'; // <-- Ganti dengan anon key Anda
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Nama tabel
+    const TABLE_BANNER = 'banner';
+    const TABLE_KOLEKSI = 'koleksi';
+    const TABLE_BAHAN = 'bahan';
+    const TABLE_PRODUK = 'produk';
+
+    // Elemen DOM Statistik
+    const elCountBanner = document.getElementById('count-banner');
+    const elCountKoleksi = document.getElementById('count-koleksi');
+    const elCountBahan = document.getElementById('count-bahan');
+    const elCountProduk = document.getElementById('count-produk');
+
+    // Chart instance
+    let pieChart = null;
+
+    // Utility: fetch total count row
+    async function fetchCount(tableName) {
+      const { count, error } = await supabase
+        .from(tableName)
+        .select('id', { count: 'exact', head: true });
+      if (error) {
+        console.error(`Error fetch count ${tableName}:`, error);
+        return null;
+      }
+      return count ?? 0;
+    }
+
+    // Render atau update Pie Chart Komposisi
+    function renderPieChart(cBanner, cKoleksi, cBahan, cProduk) {
+      const ctx = document.getElementById('chart-komposisi').getContext('2d');
+      const labels = ['Banner','Koleksi','Bahan','Produk'];
+      const dataValues = [
+        cBanner != null ? cBanner : 0,
+        cKoleksi != null ? cKoleksi : 0,
+        cBahan != null ? cBahan : 0,
+        cProduk != null ? cProduk : 0
+      ];
+      if (pieChart) {
+        pieChart.data.datasets[0].data = dataValues;
+        pieChart.update();
+      } else {
+        pieChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels,
+            datasets: [{
+              data: dataValues,
+              backgroundColor: [
+                'rgba(59, 130, 246, 0.7)',   // blue
+                'rgba(16, 185, 129, 0.7)',   // green
+                'rgba(239, 68, 68, 0.7)',    // red
+                'rgba(99, 102, 241, 0.7)'    // indigo
+              ],
+              borderColor: [
+                'rgba(59, 130, 246, 1)',
+                'rgba(16, 185, 129, 1)',
+                'rgba(239, 68, 68, 1)',
+                'rgba(99, 102, 241, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: context => {
+                    const label = context.label || '';
+                    const value = context.parsed || 0;
+                    const total = context.chart.data.datasets[0].data.reduce((a,b)=>a+b, 0);
+                    const pct = total > 0 ? ((value/total)*100).toFixed(1) : 0;
+                    return `${label}: ${value} (${pct}%)`;
+                  }
+                }
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // Inisiasi dashboard: fetch totals dan render
+    async function initDashboard() {
+      // Tampilkan loading di kartu
+      elCountBanner.textContent = '...';
+      elCountKoleksi.textContent = '...';
+      elCountBahan.textContent = '...';
+      elCountProduk.textContent = '...';
+
+      // Fetch total counts paralel
+      const [cBanner, cKoleksi, cBahan, cProduk] = await Promise.all([
+        fetchCount(TABLE_BANNER),
+        fetchCount(TABLE_KOLEKSI),
+        fetchCount(TABLE_BAHAN),
+        fetchCount(TABLE_PRODUK)
+      ]);
+      elCountBanner.textContent = cBanner != null ? cBanner : 'Error';
+      elCountKoleksi.textContent = cKoleksi != null ? cKoleksi : 'Error';
+      elCountBahan.textContent = cBahan != null ? cBahan : 'Error';
+      elCountProduk.textContent = cProduk != null ? cProduk : 'Error';
+
+      // Render atau update pie chart
+      renderPieChart(cBanner, cKoleksi, cBahan, cProduk);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initDashboard();
+    });
+    // Jika menggunakan partial navigation (Astro/Turbo), panggil initDashboard() kembali setelah page load.
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lupa Password</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+      <style>
+      @keyframes fade-in-up {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
+
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #3b82f6;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 9999px;
+        transition: all 0.3s ease;
+        background-color: rgba(59, 130, 246, 0.1);
+      }
+
+      .back-btn:hover {
+        background-color: rgba(59, 130, 246, 0.2);
+        transform: translateX(-4px);
+      }
+
+      .back-btn svg {
+        transition: transform 0.3s ease;
+      }
+
+      .back-btn:hover svg {
+        transform: translateX(-3px);
+      }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+      <a href="/login" class="back-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to Home
+    </a>
+  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md space-y-6">
+    <h2 class="text-2xl font-bold text-center text-blue-600">Lupa Password</h2>
+
+<form id="forgot-form" class="space-y-4">
+  <div>
+    <label class="block mb-1 text-sm font-medium text-gray-700">Email</label>
+    <input id="email" type="email" required placeholder="Masukkan email"
+           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+  </div>
+
+  <div id="password-section" class="hidden space-y-4">
+    <div>
+      <label class="block mb-1 text-sm font-medium text-gray-700">Password Baru</label>
+      <input id="new-password" type="password" required placeholder="Masukkan password baru"
+             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+    </div>
+
+    <button type="submit"
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition">
+      Ganti Password
+    </button>
+  </div>
+
+  <button id="check-email-btn" type="button"
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition">
+    Cek Email
+  </button>
+
+  <p id="notif" class="text-sm text-center text-red-500 hidden"></p>
+  <p id="success-msg" class="text-sm text-center text-green-600 hidden">Password berhasil diubah!</p>
+</form>
+
+
+  </div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const supabase = createClient(
+    'https://pmfzypvynmyotmvbgafi.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM'
+  );
+
+  const emailInput = document.getElementById('email');
+  const passwordSection = document.getElementById('password-section');
+  const newPasswordInput = document.getElementById('new-password');
+  const notif = document.getElementById('notif');
+  const successMsg = document.getElementById('success-msg');
+  const checkBtn = document.getElementById('check-email-btn');
+  const form = document.getElementById('forgot-form');
+
+  let staffId = null;
+
+  // Coba isi otomatis email kalau pernah login
+  try {
+    const session = JSON.parse(localStorage.getItem("staffSession"));
+    const email = session?.email;
+    if (email && email.includes("@")) {
+      emailInput.value = email;
+    }
+  } catch (e) {
+    console.warn("Gagal parsing sesi:", e);
+  }
+
+  checkBtn.addEventListener('click', async () => {
+    notif.classList.add('hidden');
+    successMsg.classList.add('hidden');
+    passwordSection.classList.add('hidden');
+
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    const { data, error } = await supabase
+      .from('staff')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (error || !data) {
+      notif.textContent = 'Email tidak terdaftar!';
+      notif.classList.remove('hidden');
+    } else {
+      staffId = data.id;
+      passwordSection.classList.remove('hidden');
+      checkBtn.classList.add('hidden');
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    notif.classList.add('hidden');
+    successMsg.classList.add('hidden');
+
+    const newPassword = newPasswordInput.value;
+    if (!staffId || !newPassword) return;
+
+    const { error } = await supabase
+      .from('staff')
+      .update({ password: newPassword })
+      .eq('id', staffId);
+
+    if (error) {
+      notif.textContent = 'Gagal mengganti password!';
+      notif.classList.remove('hidden');
+    } else {
+      successMsg.classList.remove('hidden');
+      form.reset();
+      passwordSection.classList.add('hidden');
+      checkBtn.classList.remove('hidden');
+    }
+  });
+</script>
+
+
+</body>
+</html>
