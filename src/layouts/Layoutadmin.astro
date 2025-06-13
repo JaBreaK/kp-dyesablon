@@ -157,7 +157,7 @@ const {
   </div>
 </div>
 
-<script type="module" >
+<script type="module" is:client>
   // Logout handler
   document.getElementById("btn-logout").addEventListener("click", () => {
     localStorage.removeItem("staffSession");
@@ -193,7 +193,7 @@ const {
     console.warn("Gagal parsing staffSession:", e);
   }
 </script>
-<script >
+<script is:client>
   document.addEventListener("DOMContentLoaded", () => {
     const currentPath = window.location.pathname;
     const links = document.querySelectorAll(".sidebar-link");
