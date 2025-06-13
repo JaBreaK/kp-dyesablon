@@ -1,101 +1,231 @@
-<!-- Minimal animated dark-only carousel dengan plain JavaScript, Tailwind CSS, dan kompatibel Turbo -->
-<section id="hero-carousel" class="relative overflow-hidden h-screen hero-section">
-  <!-- Slides Container -->
-  <div id="slides" class="absolute inset-0">
-    <!-- Slides akan di-inject di sini -->
-  </div>
 
-  <!-- Dark Overlay for Contrast -->
-  <div class="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
 
-  <!-- Content -->
-  <div class="relative z-10 container-custom flex items-center justify-center h-full">
-    <!-- Hero Content -->
-    <div class="text-white text-center px-4">
-      <h1 class="text-4xl sm:text-6xl font-bold">
-        <span class="font-brand1 text-[#D4AF37]">DYE</span>
-        <span class="font-display">APPAREL</span>
-      </h1>
-      <p class="mt-4 text-xl">Custom Tanpa Batas</p>
-      <a href="https://wa.me/c/6289601651641" target="_blank" class="mt-6 inline-block btn-outline">
-        Custom Sekarang
-      </a>
+---
+
+---
+<header class="sticky top-0 w-full bg-transparent/90 dark:bg-transparent backdrop-blur z-50 py-4 transition-colors duration-300">
+  <div class="container-custom flex items-center justify-between">
+    <a href="/" class="flex items-center" aria-label="Go to homepage">
+      <!-- <img src="https://drive.google.com/thumbnail?id=1qQkls5SW8zdMf8aQ0LVSGc62GxS_ChOq&sz=w2000" alt="DYE Sablon" class="h-8 w-auto">
+      <span class="ml-2 text-xl font-family font-semibold text-secondary-900 dark:text-[#D4AF37]">DYE | Sablon</span> -->
+      <span class="sitename ml-2 text-xl font-brand1 font-semibold text-[#D4AF37]">DYE |</span>
+      <span class="ml-2 text-xl font-brand font-semibold text-secondary-900s">APPAREL</span>
+    </a>
+    
+    <nav class="hidden md:flex items-center ml-auto space-x-8">
+     
+      <!-- Dropdown container -->
+      <div class="relative group">
+        <!-- Trigger link -->
+        <a href="/kategori?category=sublimasi-jersey,sublimasi-batik,sublimasi-spanduk,sublimasi-lanyard"  class="flex items-center text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">
+          Sublimasi
+          <!-- Ikon panah kecil -->
+          <svg class="w-4 h-4 ml-1 transform group-hover:-rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <!-- Dropdown menu -->
+        <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+          <a href="/kategori?category=sublimasi-jersey"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Jersey</a>
+          <a href="/kategori?category=sublimasi-lanyard"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Lanyard</a>
+          <a href="/kategori?category=sublimasi-batik"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Batik</a>
+          <a href="/kategori?category=sublimasi-spanduk"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Spanduk</a>
+        </div>
+      </div>
+      <div class="relative group">
+        <!-- Trigger link -->
+        <a href="/kategori?category=sablon-jersey,sablon-kaos,sablon-dtf,sablon-plastisol,sablon-hoodie,sablon-kemeja,sablon-seragam,sablon-jaket,sablon-batik"  class="flex items-center text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">
+          Sablon
+          <!-- Ikon panah kecil -->
+          <svg class="w-4 h-4 ml-1 transform group-hover:-rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <!-- Dropdown menu -->
+        <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+          <a href="/kategori?category=sablon-jersey"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Jersey</a>
+          <a href="/kategori?category=sablon-kaos"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Kaos</a>
+          <a href="/kategori?category=sablon-dtf"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">DTF</a>
+          <a href="/kategori?category=sablon-plastisol"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Plastisol</a>
+          <a href="/kategori?category=sablon-hoodie"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Hoodie</a>
+          <a href="/kategori?category=sablon-kemeja"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Kemeja</a>
+          <a href="/kategori?category=sablon-seragam"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Seragam</a>
+          <a href="/kategori?category=sablon-jaket"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Jaket</a>
+          <a href="/kategori?category=sablon-batik"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Batik</a>
+      
+        </div>
+      </div>
+      <div class="relative group">
+        <!-- Trigger link -->
+        <a href="/kategori?category=jahit-kaos,jahit-hoodie,jahit-kemeja,jahit-seragam,jahit-jaket,jahit-batik"  class="flex items-center text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">
+          Jahit
+          <!-- Ikon panah kecil -->
+          <svg class="w-4 h-4 ml-1 transform group-hover:-rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <!-- Dropdown menu -->
+        <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+          <a href="/kategori?category=jahit-kaos"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Kaos</a>
+          <a href="/kategori?category=jahit-hoodie"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Hoodie</a>
+          <a href="/kategori?category=jahit-kemeja"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Kemeja</a>
+          <a href="/kategori?category=jahit-seragam"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Seragam</a>
+          <a href="/kategori?category=jahit-jaket"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Jaket</a>
+          <a href="/kategori?category=jahit-batik"  class="block px-4 py-2 text-secondary-700 hover:bg-gray-100 dark:text-secondary-300 dark:hover:bg-gray-700 transition-colors">Batik</a>
+        </div>
+      </div>
+
+    
+      <a href="/tentangkami" class="text-secondary-600 hover:text-primary-600 dark:text-secondary-300 dark:hover:text-primary-400 font-medium transition-colors">Tentang Kami</a>
+    
+    
+    </nav>
+    
+    
+    <div class="flex items-center space-x-4 ">
+      <button 
+        x-on:click="darkMode = !darkMode" 
+        class="p-2 rounded-full text-secondary-500 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-200 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+        aria-label="Toggle dark mode"
+      >
+        <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+        <svg x-show="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </button>
+
+      
+      
+      
+    <!-- Mobile Menu Button and Dropdown -->
+    <div x-data="{ open: false, showSublimasi: false, showSablon: false, showJahit: false, showDtfmotoran: false }" class="relative">
+      <!-- tombol hamburger -->
+      <button 
+        @click="open = !open"
+        class="md:hidden p-2 rounded-md text-secondary-600 hover:text-secondary-900 dark:text-secondary-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+        aria-label="Toggle menu"
+      >
+        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <!-- dropdown mobile -->
+      <div 
+        x-show="open" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="absolute top-12 right-0 w-56 py-2 bg-white dark:bg-secondary-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+        x-cloak
+      >
+        <a href="/" class="block px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800">Home</a>
+        
+        <!-- Printing Sublimasi with submenu toggle -->
+        <div class="border-t border-gray-100 dark:border-gray-700">
+          <button
+            @click="showSublimasi = !showSublimasi"
+            class="w-full flex items-center justify-between px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 focus:outline-none"
+            aria-expanded="false"
+          >
+            Sublimasi
+            <svg :class="showSublimasi ? 'transform rotate-180' : ''" class="h-4 w-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="showSublimasi" 
+            x-transition 
+            class="space-y-1 bg-gray-50 dark:bg-secondary-800"
+            x-cloak
+          >
+            <a href="/kategori?category=jersey"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Jersey</a>
+            <a href="/kategori?category=lanyard"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Lanyard</a>
+            <a href="/kategori?category=batik"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Batik</a>
+            <a href="/kategori?category=spanduk"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Spanduk</a>
+          </div>
+        </div>
+        <div class="border-t border-gray-100 dark:border-gray-700">
+          <button
+            @click="showSablon = !showSablon"
+            class="w-full flex items-center justify-between px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 focus:outline-none"
+            aria-expanded="false"
+          >
+            Sablon
+            <svg :class="showsablon ? 'transform rotate-180' : ''" class="h-4 w-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="showSablon" 
+            x-transition 
+            class="space-y-1 bg-gray-50 dark:bg-secondary-800"
+            x-cloak
+          >
+            <a href="/kategori?category=sablon-kaos"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Kaos</a>
+            <a href="/kategori?category=dtf"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">DTF</a>
+            <a href="/kategori?category=plastisol"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Plastisol</a>
+           </div>
+        </div>
+        <div class="border-t border-gray-100 dark:border-gray-700">
+          <button
+            @click="showJahit = !showJahit"
+            class="w-full flex items-center justify-between px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 focus:outline-none"
+            aria-expanded="false"
+          >
+            Jahit
+            <svg :class="showJahit ? 'transform rotate-180' : ''" class="h-4 w-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="showJahit" 
+            x-transition 
+            class="space-y-1 bg-gray-50 dark:bg-secondary-800"
+            x-cloak
+          >
+            <a href="/kategori?category=jahit-kaos"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Kaos</a>
+            <a href="/kategori?category=hoodie"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Hoodie</a>
+            <a href="/kategori?category=kemeja"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Kemeja</a>
+            <a href="/kategori?category=seragam"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Seragam</a>
+            <a href="/kategori?category=jaket"  class="block px-8 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700">Jaket</a>
+          </div>
+        </div>
+
+
+        <a href="/tentangkami" class="block px-4 py-2 text-sm text-secondary-700 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800">Tentang Kami</a>
+    </div>
+
     </div>
   </div>
-</section>
+</header>
 
-<script type="module">
-  // Simpan referensi interval dan status slide di luar fungsi, supaya bisa di-clear sebelum inisiasi ulang
-  let carouselIntervalId = null;
-  let carouselCurrentIndex = 0;
-
-  function initHeroCarousel() {
-    // Jika sebelumnya sudah ada interval berjalan, bersihkan dulu
-    if (carouselIntervalId) {
-      clearInterval(carouselIntervalId);
-      carouselIntervalId = null;
-    }
-    const slideCount = 3; // jumlah slide, ubah sesuai kebutuhan
-    const slidesContainer = document.getElementById('slides');
-    if (!slidesContainer) {
-      console.warn('Hero carousel: elemen #slides tidak ditemukan');
-      return;
-    }
-
-    // Sebelum inisiasi ulang, kosongkan kontainer slide agar tidak duplikat slide lama
-    slidesContainer.innerHTML = '';
-
-    // Reset index
-    carouselCurrentIndex = 0;
-
-    // Generate hanya dark-mode slides
-    for (let i = 1; i <= slideCount; i++) {
-      const div = document.createElement('div');
-      div.className = 'absolute inset-0 bg-center bg-cover filter blur-[3px] opacity-0 transition-opacity duration-1000';
-      div.dataset.index = i - 1;
-      div.style.backgroundImage = `url(https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-DARK-${i}.jpg)`;
-      slidesContainer.appendChild(div);
-    }
-
-    function showSlide(index) {
-      const slides = slidesContainer.children;
-      if (!slides || slides.length === 0) return;
-      for (const slide of slides) {
-        slide.classList.remove('opacity-100');
-        slide.classList.add('opacity-0');
-      }
-      // Pastikan index valid
-      const idx = index % slides.length;
-      slides[idx].classList.remove('opacity-0');
-      slides[idx].classList.add('opacity-100');
-      carouselCurrentIndex = idx;
-    }
-
-    function nextSlide() {
-      showSlide((carouselCurrentIndex + 1) % slideCount);
-    }
-
-    // Initialize tampilan pertama
-    showSlide(0);
-    // Set interval
-    carouselIntervalId = setInterval(nextSlide, 5000);
+<style>
+  /* Add styles for dark mode SVG in the header */
+  @media (prefers-color-scheme: dark) {
+    .dark\:fill-slate-800 { fill: #1e293b; }
+    .dark\:fill-slate-600 { fill: #475569; }
+    .dark\:fill-slate-500 { fill: #64748b; }
+    .dark\:fill-slate-700 { fill: #334155; }
+    .dark\:stroke-slate-300 { stroke: #cbd5e1; }
+    .dark\:stroke-teal-500 { stroke: #14b8a6; }
+    .dark\:fill-white { fill: #ffffff; }
   }
-
-  // Bersihkan sebelum Turbo cache halaman
-  function cleanupHeroCarousel() {
-    // Hentikan interval
-    if (carouselIntervalId) {
-      clearInterval(carouselIntervalId);
-      carouselIntervalId = null;
-    }
-    // Kosongkan slides agar Turbo tidak menyimpan elemen lama
-    const slidesContainer = document.getElementById('slides');
-    if (slidesContainer) {
-      slidesContainer.innerHTML = '';
-    }
+  
+  /* Add hover animation to the logo */
+  header a:hover svg {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
   }
-
-document.addEventListener('astro:page-load', () => {
-    initHeroCarousel();
-  });
-</script>
+  
+  /* Hide Alpine.js elements before Alpine loads */
+  [x-cloak] { display: none !important; }
+</style>
