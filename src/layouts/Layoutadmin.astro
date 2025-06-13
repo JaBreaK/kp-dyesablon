@@ -206,11 +206,11 @@ const {
 
     // Ambil nama dari email di localStorage staffSession
     try {
-      const session = JSON.parse(localStorage.getItem("staffSession") || '{}');
+      const session = JSON.parse(localStorage.getItem("staffSession"));
       const email = session?.email ?? "";
       if (email.includes("@")) {
         const name = email.split("@")[0].toUpperCase();
-        document.getElementById("admin-name")!.textContent = name;
+        document.getElementById("admin-name").textContent = name;
       }
     } catch (e) {
       console.warn("Gagal parsing staffSession:", e);
