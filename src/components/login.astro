@@ -96,12 +96,7 @@ if (Astro.request.method === 'POST') {
   </head>
 
   <body class="bg-gradient-to-br from-[#f5f7fa] to-[#c3cfe2]">
-    <a href="/" class="back-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-      </svg>
-      Back to Home
-    </a>
+
 
     <main class="min-h-screen flex items-center justify-center p-4">
       <div class="bg-white rounded-xl shadow-2xl p-8 md:p-10 w-full max-w-md transform -translate-y-5 animate-fade-in-up">
@@ -165,6 +160,12 @@ if (Astro.request.method === 'POST') {
         </form>
       </div>
     </main>
+        <a href="/" class="back-btn" onclick="window.location.href=this.href; returnfalse;">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to Home
+    </a>
         {loginSuccessData && (
       <script define:vars={{ sessionData: loginSuccessData }}>
         // Simpan data sesi yang didapat dari server ke localStorage
