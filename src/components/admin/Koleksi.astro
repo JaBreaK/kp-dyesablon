@@ -1,291 +1,185 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Koleksi Manager Supabase</title>
-  <!-- Tailwind CSS via CDN atau build pipeline -->
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
+---
+// src/pages/koleksi.astro
 
-  <div class="flex flex-col lg:flex-row gap-6">
-    <!-- Daftar koleksi -->
-    <div id="koleksi-container" class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Akan di-render JS -->
+import { supabase } from '../../lib/supabase';
+
+
+// 1. Fetch data di sisi server saat halaman dimuat
+const { data: koleksiList, error } = await supabase
+  .from('koleksi')
+  .select('*')
+  .order('nama', { ascending: true });
+
+if (error) {
+  console.error('Error fetching koleksi:', error.message);
+  // Kamu bisa redirect ke halaman error jika perlu
+}
+
+// Konfigurasi untuk client-side script dan render
+const DEFAULT_IMAGE_URL = '/public/image.svg';
+
+// Helper untuk memastikan URL gambar valid
+function resolveImageUrl(gambarField: string | null) {
+  if (!gambarField) return DEFAULT_IMAGE_URL;
+  // Jika sudah URL lengkap, langsung gunakan
+  if (gambarField.startsWith('http')) return gambarField;
+  // Jika hanya path, perlu digabungkan (sesuaikan jika perlu)
+  // Tapi asumsinya kita selalu simpan URL lengkap di DB
+  return gambarField; 
+}
+---
+
+
+  <main class="p-4 md:p-6 lg:p-8">
+    <div class="flex flex-col lg:flex-row gap-6">
+
+      <div id="koleksi-container" class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {koleksiList && koleksiList.length > 0 ? (
+          koleksiList.map((item) => (
+            <div class="bg-white rounded-lg shadow p-4 flex flex-col">
+              <img
+                src={resolveImageUrl(item.gambar)}
+                alt={item.nama || 'koleksi'}
+                class="w-full h-32 object-cover rounded"
+              />
+              <h3 class="mt-2 text-lg font-semibold text-gray-800">{item.nama || '(no name)'}</h3>
+              <div class="mt-auto pt-2 flex justify-end">
+                <button
+                  class="btn-edit px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm"
+                  data-id={item.id}
+                  data-nama={item.nama}
+                  data-gambar={item.gambar}
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p class="text-gray-500 col-span-full">Belum ada koleksi.</p>
+        )}
+        {error && <p class="text-red-500 col-span-full">Gagal memuat data koleksi.</p>}
+      </div>
+
+      <div id="edit-panel" class="w-full lg:w-80 bg-white rounded-lg shadow p-4 self-start hidden">
+        <h3 class="text-lg font-medium text-gray-800 mb-4">Edit Koleksi</h3>
+        <form id="koleksi-form" class="flex flex-col space-y-3">
+          <input type="hidden" id="koleksi-id" />
+          <input type="hidden" id="koleksi-old-gambar" />
+          <div hidden>
+            <label for="koleksi-nama" class="block text-sm font-medium text-gray-700">Nama Koleksi</label>
+            <input type="text" id="koleksi-nama" class="mt-1 w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama koleksi" required />
+          </div>
+          <div>
+            <label for="koleksi-gambar" class="block text-sm font-medium text-gray-700">Ganti Gambar (opsional)</label>
+            <input type="file" accept="image/*" id="koleksi-gambar" class="mt-1 w-full text-sm" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Preview Gambar</label>
+            <img id="koleksi-preview" src={DEFAULT_IMAGE_URL} alt="Preview" class="w-full h-32 object-cover rounded border mt-1 bg-gray-50" />
+          </div>
+          <div class="flex justify-end space-x-2 pt-2">
+            <button type="button" id="btn-cancel" class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400">Batal</button>
+            <button type="submit" id="btn-submit" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">Simpan</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </main>
 
-    <!-- Side form untuk edit saja -->
-    <div id="edit-panel" class="w-full lg:w-80 bg-white rounded-lg shadow p-4 hidden">
-      <h3 class="text-lg font-medium text-gray-800 mb-4">Edit Koleksi</h3>
-      <form id="koleksi-form" class="flex flex-col space-y-3">
-        <!-- Hidden field untuk menyimpan id yang diedit -->
-        <input type="hidden" id="koleksi-id" />
-        <div>
-          <label for="koleksi-nama" class="block text-sm font-medium text-gray-700">Nama Koleksi</label>
-          <input type="text" name="nama" id="koleksi-nama"
-                 class="mt-1 w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                 placeholder="Nama koleksi" />
-        </div>
-        <div>
-          <label for="koleksi-gambar" class="block text-sm font-medium text-gray-700">Ganti Gambar (opsional)</label>
-          <input type="file" accept="image/*" name="gambar" id="koleksi-gambar"
-                 class="mt-1 w-full" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Preview Gambar</label>
-          <img id="koleksi-preview" src="" alt="Preview"
-               class="w-full h-32 object-cover rounded border mt-1 bg-gray-50" />
-        </div>
-        <div class="flex justify-end space-x-2 pt-2">
-          <button type="button" id="btn-cancel"
-                  class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400">Batal</button>
-          <button type="submit"
-                  class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">Simpan</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Script Supabase & logic -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-    // ======= KONFIGURASI: Ganti sesuai project Anda =======
-    const SUPABASE_URL = 'https://pmfzypvynmyotmvbgafi.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM'; // <-- Ganti dengan anon key Anda
-    const BUCKET_NAME = 'images';       // bucket Supabase Storage
-    const FOLDER = 'koleksi';           // subfolder untuk koleksi
-    const TABLE_NAME = 'koleksi';       // nama tabel koleksi
-    // Fallback image jika kolom gambar kosong:
-    const DEFAULT_IMAGE_URL = 'https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/HOME/LP-DARK-1.jpg';
-    // =====================================================
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Elemen DOM
+  <script define:vars={{ DEFAULT_IMAGE_URL }}>
+    // Client-side script untuk interaktivitas
     const container = document.getElementById('koleksi-container');
     const editPanel = document.getElementById('edit-panel');
     const form = document.getElementById('koleksi-form');
     const inputId = document.getElementById('koleksi-id');
+    const inputOldGambar = document.getElementById('koleksi-old-gambar');
     const inputNama = document.getElementById('koleksi-nama');
     const inputGambar = document.getElementById('koleksi-gambar');
     const previewImg = document.getElementById('koleksi-preview');
     const btnCancel = document.getElementById('btn-cancel');
+    const btnSubmit = document.getElementById('btn-submit');
 
-    let koleksiList = [];
-
-    // Prefix public URL Supabase Storage:
-    // e.g. 'https://pmfzypvynmyotmvbgafi.supabase.co/storage/v1/object/public/images/'
-    const STORAGE_PUBLIC_BASE = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/`;
-
-    // Utility: parse path di Storage dari public URL
-    // Jika URL: "https://.../storage/v1/object/public/images/koleksi/xxx.png"
-    // Maka return: "koleksi/xxx.png"
-    function parsePathFromUrl(url) {
-      if (!url || typeof url !== 'string') return null;
-      if (url.startsWith(STORAGE_PUBLIC_BASE)) {
-        return url.substring(STORAGE_PUBLIC_BASE.length);
-      }
-      return null;
-    }
-
-    // Resolve URL gambar:
-    // - Jika kosong/null: pakai DEFAULT_IMAGE_URL
-    // - Jika sudah http/https: return langsung
-    // - Jika path saja: bangun publicUrl via STORAGE_PUBLIC_BASE
-    function resolveImageUrl(gambarField) {
-      if (!gambarField) return DEFAULT_IMAGE_URL;
-      if (typeof gambarField === 'string' && (gambarField.startsWith('http://') || gambarField.startsWith('https://'))) {
-        return gambarField;
-      }
-      // Jika menyimpan path saja (misal 'koleksi/xxx.png'), kembalikan STORAGE_PUBLIC_BASE + path
-      return STORAGE_PUBLIC_BASE + gambarField;
-    }
-
-    // 1. Fetch data koleksi dari tabel
-    async function fetchKoleksi() {
-      container.innerHTML = '<p class="text-gray-500">Loading...</p>';
-      const { data, error } = await supabase
-        .from(TABLE_NAME)
-        .select('*')
-        .order('nama', { ascending: true });
-      if (error) {
-        console.error('Error fetch koleksi:', error);
-        container.innerHTML = `<p class="text-red-500">Gagal memuat data koleksi: ${error.message}</p>`;
-        return;
-      }
-      koleksiList = data;
-      renderKoleksi();
-    }
-
-    // 2. Render daftar koleksi
-    function renderKoleksi() {
-      container.innerHTML = '';
-      if (!koleksiList || koleksiList.length === 0) {
-        container.innerHTML = '<p class="text-gray-500">Belum ada koleksi.</p>';
-        return;
-      }
-      koleksiList.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'bg-white rounded-lg shadow p-4 flex flex-col';
-
-        // Gambar
-        const img = document.createElement('img');
-        img.src = resolveImageUrl(item.gambar);
-        img.alt = item.nama || 'koleksi';
-        img.className = 'w-full h-32 object-cover rounded';
-        card.appendChild(img);
-
-        // Nama/title
-        const h3 = document.createElement('h3');
-        h3.className = 'mt-2 text-lg font-semibold text-gray-800';
-        h3.textContent = item.nama || '(no name)';
-        card.appendChild(h3);
-
-        // Tombol Edit saja
-        const btnContainer = document.createElement('div');
-        btnContainer.className = 'mt-2 flex justify-end';
-
-        const btnEdit = document.createElement('button');
-        btnEdit.className = 'px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600';
-        btnEdit.textContent = 'Edit';
-        btnEdit.addEventListener('click', () => openEditForm(item));
-        btnContainer.appendChild(btnEdit);
-
-        card.appendChild(btnContainer);
-        container.appendChild(card);
-      });
-    }
-
-    // 3. Buka form edit: isi input, simpan URL lama di dataset
-    function openEditForm(item) {
-      inputId.value = item.id;
-      inputNama.value = item.nama || '';
-      previewImg.src = resolveImageUrl(item.gambar);
-      inputGambar.value = '';
-      // Simpan URL lama:
-      form.dataset.oldUrl = item.gambar || '';
-      // Tampilkan panel edit
-      editPanel.classList.remove('hidden');
-      // Scroll ke panel mungkin
-      editPanel.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // 4. Close/cancel edit
+    // Fungsi untuk menutup & mereset form
     function closeEditForm() {
-      resetForm();
+      form.reset();
+      inputId.value = '';
+      inputOldGambar.value = '';
+      previewImg.src = DEFAULT_IMAGE_URL;
       editPanel.classList.add('hidden');
     }
-    btnCancel.addEventListener('click', closeEditForm);
 
-    function resetForm() {
-      inputId.value = '';
-      inputNama.value = '';
-      inputGambar.value = '';
-      previewImg.src = '';
-      delete form.dataset.oldUrl;
-    }
+    // Event listener untuk semua tombol 'Edit'
+    container.addEventListener('click', (e) => {
+      const editButton = e.target.closest('.btn-edit');
+      if (editButton) {
+        // Ambil data dari atribut data-*
+        const { id, nama, gambar } = editButton.dataset;
+        
+        // Isi form
+        inputId.value = id;
+        inputNama.value = nama;
+        inputOldGambar.value = gambar || '';
+        previewImg.src = gambar || DEFAULT_IMAGE_URL;
 
-    // 5. Preview saat pilih file baru
+        // Tampilkan panel edit
+        editPanel.classList.remove('hidden');
+        editPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // Preview saat memilih file baru
     inputGambar.addEventListener('change', () => {
       const file = inputGambar.files[0];
       if (file) {
         previewImg.src = URL.createObjectURL(file);
       } else {
-        // Kembali ke gambar lama
-        if (form.dataset.oldUrl) {
-          previewImg.src = resolveImageUrl(form.dataset.oldUrl);
-        } else {
-          previewImg.src = '';
-        }
+        // Jika batal pilih file, kembalikan ke gambar lama
+        previewImg.src = inputOldGambar.value || DEFAULT_IMAGE_URL;
       }
     });
 
-    // 6. Submit form: hanya edit
+    btnCancel.addEventListener('click', closeEditForm);
+
+    // Handle submit form (hanya untuk edit)
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const id = inputId.value;
-      const nama = inputNama.value.trim();
-      const file = inputGambar.files[0];
+      
+      const formData = new FormData();
+      formData.append('id', inputId.value);
+      formData.append('nama', inputNama.value.trim());
+      formData.append('old_gambar', inputOldGambar.value);
 
-      if (!id) {
-        alert('Terjadi kesalahan: ID koleksi tidak ditemukan.');
+      if (inputGambar.files[0]) {
+        formData.append('gambar', inputGambar.files[0]);
+      }
+      
+      if (!formData.get('nama')) {
+        alert('Nama koleksi tidak boleh kosong.');
         return;
       }
-      if (!nama) {
-        alert('Nama koleksi harus diisi.');
-        return;
-      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Menyimpan...';
 
       try {
-        await editKoleksi(id, nama, file);
-        alert('Koleksi berhasil diupdate');
-        closeEditForm();
-        fetchKoleksi();
-      } catch (err) {
-        console.error('Error editKoleksi:', err);
-        alert('Gagal update koleksi: ' + err.message);
-      }
-    });
-
-    // 7. Fungsi editKoleksi: update nama dan opsional upload file baru
-    async function editKoleksi(id, nama, file) {
-      let updateObj = { nama };
-      let newPath = null;
-      let newPublicUrl = null;
-
-      if (file) {
-        // Upload file baru ke Storage bucket 'images', folder 'koleksi'
-        const fileExt = file.name.split('.').pop();
-        const safeName = nama.toLowerCase()
-                             .replace(/\s+/g, '-')
-                             .replace(/[^a-z0-9\-]/g, '');
-        const timestamp = Date.now();
-        const filePath = `${FOLDER}/${safeName}-${timestamp}.${fileExt}`; // 'koleksi/xxx.png'
-
-        const { data: uploadData, error: uploadError } = await supabase
-          .storage
-          .from(BUCKET_NAME)
-          .upload(filePath, file, { cacheControl: '3600', upsert: false });
-        if (uploadError) throw uploadError;
-
-        // Dapatkan publicUrl
-        const { data: { publicUrl }, error: urlError } = supabase
-          .storage
-          .from(BUCKET_NAME)
-          .getPublicUrl(uploadData.path);
-        if (urlError) console.warn('Gagal dapat publicUrl new file:', urlError);
-
-        newPath = uploadData.path;         // 'koleksi/xxx.png'
-        newPublicUrl = publicUrl;          // full URL
-        updateObj.gambar = newPublicUrl;
-      }
-
-      // Update row di tabel
-      const { error: updateError } = await supabase
-        .from(TABLE_NAME)
-        .update(updateObj)
-        .eq('id', id);
-      if (updateError) throw updateError;
-
-      // Jika ada file lama dan file baru diupload, hapus file lama di Storage
-      if (file && form.dataset.oldUrl) {
-        const oldUrl = form.dataset.oldUrl;
-        const oldPath = parsePathFromUrl(oldUrl);
-        if (oldPath) {
-          const { error: delErr } = await supabase
-            .storage
-            .from(BUCKET_NAME)
-            .remove([oldPath]);
-          if (delErr) console.warn('Gagal hapus file lama:', delErr);
+        const response = await fetch('/api/koleksi', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.message || 'Terjadi kesalahan pada server.');
         }
-      }
-    }
 
-    // 8. Inisialisasi: fetch data awal
-    document.addEventListener('DOMContentLoaded', () => {
-      fetchKoleksi();
+        alert('Koleksi berhasil diupdate!');
+        window.location.reload(); // Reload halaman untuk melihat data baru
+
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Gagal menyimpan perubahan: ' + error.message);
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Simpan';
+      }
     });
   </script>
-
-</html>

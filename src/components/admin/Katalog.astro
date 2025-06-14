@@ -1,357 +1,366 @@
-<!-- Simplified HTML & JS for Produk Management -->
+---
+// src/pages/produk.astro
 
-<body class="bg-gray-100 dark:bg-gray-900">
-  <section class="p-6 max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8">
+import { supabase } from '../../lib/supabase';
+
+// 1. Ambil data awal di server agar halaman cepat tampil
+const { data: allProducts, error } = await supabase
+  .from('produk')
+  .select('*')
+  .order('nama', { ascending: true });
+
+if (error) {
+  console.error("SSR Error - Gagal fetch produk:", error.message);
+}
+
+// 2. Definisikan kategori di server agar konsisten
+const categoryGroups = {
+  Sublimasi: ["sublimasi-batik", "sublimasi-spanduk", "sublimasi-lanyard", "sublimasi-jersey"],
+  Sablon: ["sablon-jersey", "sablon-kaos", "sablon-dtf", "sablon-plastisol", "sablon-hoodie", "sablon-kemeja", "sablon-seragam", "sablon-jaket", "sablon-batik"],
+  Jahit: ["jahit-kaos", "jahit-hoodie", "jahit-kemeja", "jahit-seragam", "jahit-jaket", "jahit-batik"],
+};
+
+const pageSize = 12;
+---
+
+
+
+
+
+  <section class="p-4 sm:p-6 max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-xl">
     <div class="flex justify-between items-start mb-6">
-      <h1 class="text-4xl font-extrabold text-gray-700 dark:text-white">Manajemen Produk</h1>
-      <button id="add-btn" class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">Tambah Produk</button>
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-gray-700 dark:text-white">Manajemen Produk</h1>
+      <button id="add-btn" class="px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm sm:text-base">Tambah Produk</button>
     </div>
 
-    <form id="product-form" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 rounded-xl p-6 shadow-lg opacity-0 -translate-y-4 transition-all duration-300">
-      <input type="hidden" id="product-id" />
-      <input type="hidden" id="existing-image-url" />
-
-      <div class="md:col-span-2">
-        <label for="nama" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Produk</label>
-        <input id="nama" type="text" required placeholder="Masukkan judul" class="w-full px-5 py-3 border-2 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-primary-500 focus:ring-2 focus:ring-primary-300 transition-all duration-300 hover:border-primary-400 shadow-sm" />
-      </div>
-
-      <div class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
-        <div id="kategori" class="space-y-4"></div>
-        <p id="category-error" class="text-red-500 text-sm mt-1 hidden">Pilih minimal satu kategori!</p>
-      </div>
-
-      <div class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unggah Gambar</label>
-        <div id="drop-area" class="relative w-full flex flex-col items-center justify-center p-10 border-2 border-dashed border-gray-400 rounded-2xl bg-gray-50 dark:bg-gray-700 hover:border-primary-500 cursor-pointer transition-all duration-300 hover:shadow-xl">
-          <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-          </svg>
-          <p class="text-gray-500 dark:text-gray-400">Tarik & Lepas atau klik untuk memilih</p>
-          <input type="file" id="image-file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+    <form id="product-form" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 bg-white/80 dark:bg-gray-800/80 rounded-xl p-6 shadow-lg opacity-0 -translate-y-4 transition-all duration-300">
+        <input type="hidden" id="product-id" name="id" />
+        <input type="hidden" id="existing-image-url" name="existing-image-url" />
+        <div class="md:col-span-2"><label for="nama" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Produk</label><input id="nama" name="nama" type="text" required placeholder="Masukkan judul" class="w-full px-5 py-3 border-2 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition" /></div>
+        <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label><div id="kategori" class="space-y-4"></div><p id="category-error" class="text-red-500 text-sm mt-1 hidden">Pilih minimal satu kategori!</p></div>
+        <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unggah Gambar</label><div id="drop-area" class="relative w-full flex flex-col items-center justify-center p-10 border-2 border-dashed border-gray-400 rounded-2xl bg-gray-50 dark:bg-gray-700 hover:border-blue-500 cursor-pointer transition"><svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg><p class="text-gray-500 dark:text-gray-400">Tarik & Lepas atau klik untuk memilih</p><input type="file" id="image-file" name="gambar" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" /></div><p id="file-name" class="mt-2 text-sm italic text-gray-600 dark:text-gray-400"></p><img id="image-preview" class="mt-4 w-full max-h-48 object-contain border rounded-lg shadow hidden" /></div>
+        <div class="md:col-span-2"><label for="editor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi</label><div id="editor" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 h-40 rounded-lg"></div></div>
+        <div class="md:col-span-2 mt-20 flex justify-end space-x-4">
+          <button type="button" id="cancel-btn" class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg hidden">Batal</button>
+          <button type="submit" id="submit-btn" class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl transition hover:shadow-lg flex items-center"><span class="submit-text">Simpan</span><svg id="loading-spinner" class="hidden w-5 h-5 ml-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg></button>
         </div>
-        <p id="file-name" class="mt-2 text-sm italic text-gray-600 dark:text-gray-400"></p>
-        <img id="image-preview" class="mt-4 w-full max-h-48 object-contain border rounded-lg shadow hidden" />
-      </div>
-
-      <div class="md:col-span-2">
-        <label for="editor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi</label>
-        <div id="editor" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 h-40 rounded-lg"></div>
-      </div>
-
-      <div class="md:col-span-2 mt-10 flex justify-end space-x-4">
-        <button type="button" id="cancel-btn" class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg hidden">Batal</button>
-        <button type="submit" id="submit-btn" class="px-8 py-3 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl transition-all duration-300 hover:shadow-lg hover:from-primary-700 hover:to-purple-700 active:scale-95 flex items-center">
-          <span class="submit-text">Simpan</span>
-          <svg id="loading-spinner" class="hidden w-5 h-5 ml-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-        </button>
-      </div>
     </form>
-
+    
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 space-y-4 md:space-y-0">
-      <input id="search-input" type="text" placeholder="Cari produk..." class="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:border-primary-500 dark:bg-gray-800 focus:ring-primary-200 transition" />
+        <input id="search-input" type="text" placeholder="Cari produk..." class="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:border-blue-500 dark:bg-gray-800" />
     </div>
-
-    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {allProducts && allProducts.slice(0, pageSize).map(p => (
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 flex flex-col justify-between transition hover:shadow-xl h-full">
+                <img src={p.gambar} alt={p.nama} class="rounded-xl w-full h-40 object-cover mb-3" loading="lazy" />
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-1 truncate">{p.nama}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 capitalize">Kategori: {p.kategori.join(", ")}</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-sm font-medium">
+                    <button data-id={p.id} class="edit-btn text-blue-600 hover:underline">Edit</button>
+                    <button data-id={p.id} class="delete-btn text-red-500 hover:underline">Hapus</button>
+                </div>
+            </div>
+        ))}
+    </div>
     <div id="pagination" class="flex justify-center items-center space-x-2 mt-6"></div>
-   
   </section>
   <div id="notification-container" class="fixed top-4 right-4 z-50 space-y-3"></div>
-
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-    const SUPABASE_URL = "https://pmfzypvynmyotmvbgafi.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM";
-    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const categoryGroups = {
-      Sublimasi: ["sublimasi-batik", "sublimasi-spanduk", "sublimasi-lanyard", "sublimasi-jersey"],
-      Sablon: ["sablon-jersey", "sablon-kaos", "sablon-dtf", "sablon-plastisol", "sablon-hoodie", "sablon-kemeja", "sablon-seragam", "sablon-jaket", "sablon-batik"],
-      Jahit: ["jahit-kaos", "jahit-hoodie", "jahit-kemeja", "jahit-seragam", "jahit-jaket", "jahit-batik"],
-    };
-
-    let allProducts = [];
+  
+  <script type="module" is:client define:vars={{ allProducts: allProducts || [], categoryGroups, pageSize }}>
+    // KODE JAVASCRIPT ASLI ANDA, dengan sedikit modifikasi untuk memanggil API
+    
+    // Variabel state & elemen DOM (seperti aslinya)
     let currentPage = 1;
-    const pageSize = 8;
     let searchTerm = "";
 
     const formEl = document.getElementById("product-form");
     const grid = document.getElementById("products-grid");
     const pagDiv = document.getElementById("pagination");
-    const quill = new Quill("#editor", { theme: "snow", modules: { toolbar: [[{ header: [1, 2, 3, false] }], ["bold", "italic", "underline", "strike"], [{ size: ["small", false, "large", "huge"] }], [{ list: "ordered" }, { list: "bullet" }], ["link", "image"], ["clean"], ], }, });
+    const quill = new Quill("#editor", { 
+        theme: "snow", 
+        modules: { toolbar: [[{ header: [1, 2, 3, false] }], ["bold", "italic", "underline", "strike"], [{ size: ["small", false, "large", "huge"] }], [{ list: "ordered" }, { list: "bullet" }], ["link", "image"], ["clean"], ], }, 
+    });
+    // Hidden input untuk Quill tetap sama
     const hiddenDesk = Object.assign(document.createElement("input"), { type: "hidden", id: "deskripsi-html", name: "deskripsi" });
     formEl.appendChild(hiddenDesk);
 
+    // Inisialisasi saat halaman siap (seperti aslinya)
     document.addEventListener("DOMContentLoaded", () => {
-      if (!localStorage.getItem("staffSession")) return void (window.location.replace("/login"));
-      renderCategoryCheckboxes();
-      resetForm();
-      fetchProducts();
+        if (!localStorage.getItem("staffSession")) return void (window.location.replace("/login"));
+        renderCategoryCheckboxes();
+        resetForm();
+        // DIUBAH: Tidak perlu fetchProducts(), karena data sudah ada. Cukup render.
+        renderProductsPage();
     });
 
+    // Event listener (seperti aslinya)
     window.addEventListener("storage", (e) => e.key === "staffSession" && e.newValue === null && window.location.replace("/login"));
-    
-
     document.getElementById("search-input").addEventListener("input", (e) => { searchTerm = e.target.value.trim().toLowerCase(); currentPage = 1; renderProductsPage(); });
-
-    document.getElementById("add-btn").addEventListener("click", () => { resetForm(); document.getElementById("cancel-btn").classList.remove("hidden");
- showForm();  });
+    document.getElementById("add-btn").addEventListener("click", () => { resetForm(); document.getElementById("cancel-btn").classList.remove("hidden"); showForm(); });
     document.getElementById("cancel-btn").addEventListener("click", () => { resetForm(); hideForm(); });
-
     grid.addEventListener("click", async (e) => { if (e.target.matches(".edit-btn")) await enterEdit(e.target.dataset.id); if (e.target.matches(".delete-btn")) await deleteProduct(e.target.dataset.id); });
 
+    // Event listener form (DIUBAH untuk memanggil API)
     formEl.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const kategori = getKategori();
-      if (!kategori.length) return void document.getElementById("category-error").classList.remove("hidden");
-      hiddenDesk.value = quill.root.innerHTML.trim();
-      toggleSubmit(true);
-      try {
-        const id = document.getElementById("product-id").value;
-        const nama = document.getElementById("nama").value.trim();
-        let imageUrl = document.getElementById("existing-image-url").value;
-        const file = document.getElementById("image-file").files[0];
-        if (file) {
-          if (imageUrl) {
-            const oldPath = new URL(imageUrl).pathname.split("/").slice(6).join("/");
-            await sb.storage.from("images").remove([oldPath]);
-          }
-          imageUrl = await uploadImage(file);
+        e.preventDefault();
+        const kategori = getKategori();
+        if (!kategori.length) return void document.getElementById("category-error").classList.remove("hidden");
+        
+        hiddenDesk.value = quill.root.innerHTML.trim();
+        toggleSubmit(true);
+
+        try {
+            // Membuat FormData dari form, sama seperti aslinya
+            const formData = new FormData(formEl);
+            formData.append('deskripsi', hiddenDesk.value);
+            formData.append('kategori', JSON.stringify(kategori));
+            
+            // --- INI BAGIAN YANG DIUBAH ---
+            // Mengirim data ke API, bukan lagi ke Supabase Client
+            const response = await fetch('/api/produk', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorResult = await response.json();
+                throw new Error(errorResult.message || 'Gagal menyimpan data');
+            }
+            
+            const result = await response.json();
+            showNotification("success", result.message);
+            // Reload halaman untuk melihat data terbaru. Ini paling simpel & aman.
+            window.location.reload();
+            // -----------------------------
+
+        } catch (error) {
+            showNotification("error", "Terjadi kesalahan: " + error.message);
+        } finally {
+            toggleSubmit(false);
         }
-        const dataObj = { nama, slug: slugify(nama), kategori, deskripsi: hiddenDesk.value, gambar: imageUrl };
-        id ? await sb.from("produk").update(dataObj).eq("id", id) : await sb.from("produk").insert([dataObj]);
-        showNotification("success", id ? "Produk berhasil diperbarui!" : "Produk berhasil ditambahkan!");
-        resetForm();
-        fetchProducts();
-      } catch (error) {
-        showNotification("error", "Terjadi kesalahan: " + error.message);
-      } finally {
-        toggleSubmit(false);
-      }
     });
 
+    // Fungsi render checkbox kategori (sama seperti aslinya)
     function renderCategoryCheckboxes() {
-      const container = document.getElementById("kategori");
-      for (const [group, cats] of Object.entries(categoryGroups)) {
-        const groupDiv = document.createElement("div");
-        const title = document.createElement("h3");
-        title.textContent = group;
-        title.className = "text-lg font-semibold mb-2 dark:text-gray-200";
-        groupDiv.appendChild(title);
-        const gridDiv = document.createElement("div");
-        gridDiv.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 border rounded-lg p-3 bg-white dark:bg-gray-700";
-        for (const cat of cats) {
-          const label = document.createElement("label");
-          label.className = "group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-1 cursor-pointer";
-          const wrapper = document.createElement("div");
-          wrapper.className = "relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-primary-500 group-hover:border-primary-600";
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.value = cat;
-          checkbox.className = "category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer";
-          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("class", "invisible w-4 h-4 text-primary-600 peer-checked:visible");
-          svg.setAttribute("fill", "none");
-          svg.setAttribute("stroke", "currentColor");
-          svg.setAttribute("viewBox", "0 0 24 24");
-          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          path.setAttribute("stroke-linecap", "round");
-          path.setAttribute("stroke-linejoin", "round");
-          path.setAttribute("stroke-width", "3");
-          path.setAttribute("d", "M5 13l4 4L19 7");
-          svg.appendChild(path);
-          const span = document.createElement("span");
-          span.textContent = cat.replace(/^[^-]+-/, "").replace(/(^|\s)\S/g, l => l.toUpperCase());
-          span.className = "text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors font-medium";
-          wrapper.appendChild(checkbox);
-          wrapper.appendChild(svg);
-          label.appendChild(wrapper);
-          label.appendChild(span);
-          gridDiv.appendChild(label);
+        const container = document.getElementById("kategori");
+        container.innerHTML = '';
+        for (const [group, cats] of Object.entries(categoryGroups)) {
+            const groupDiv = document.createElement("div");
+            const title = document.createElement("h3");
+            title.textContent = group;
+            title.className = "text-lg font-semibold mb-2 dark:text-gray-200";
+            groupDiv.appendChild(title);
+            const gridDiv = document.createElement("div");
+            gridDiv.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 border rounded-lg p-3 bg-white dark:bg-gray-700";
+            for (const cat of cats) {
+                const label = document.createElement("label");
+                label.className = "group flex items-center space-x-3 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-1 cursor-pointer";
+                const wrapper = document.createElement("div");
+                wrapper.className = "relative flex items-center justify-center w-5 h-5 rounded-md border-2 border-blue-500 group-hover:border-blue-600";
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox"; checkbox.value = cat; checkbox.className = "category-checkbox absolute opacity-0 w-5 h-5 cursor-pointer peer";
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("class", "invisible w-4 h-4 text-blue-600 peer-checked:visible"); svg.setAttribute("fill", "none"); svg.setAttribute("stroke", "currentColor"); svg.setAttribute("viewBox", "0 0 24 24");
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("stroke-linecap", "round"); path.setAttribute("stroke-linejoin", "round"); path.setAttribute("stroke-width", "3"); path.setAttribute("d", "M5 13l4 4L19 7");
+                svg.appendChild(path);
+                const span = document.createElement("span");
+                span.textContent = cat.replace(/^[^-]+-/, "").replace(/(^|\s)\S/g, l => l.toUpperCase());
+                span.className = "text-gray-700 dark:text-gray-300 group-hover:text-blue-600 transition-colors font-medium";
+                wrapper.appendChild(checkbox); wrapper.appendChild(svg); label.appendChild(wrapper); label.appendChild(span); gridDiv.appendChild(label);
+            }
+            groupDiv.appendChild(gridDiv);
+            container.appendChild(groupDiv);
         }
-        groupDiv.appendChild(gridDiv);
-        container.appendChild(groupDiv);
-      }
     }
 
-    async function fetchProducts() {
-      try {
-        const { data, error } = await sb.from("produk").select("*").order("nama", { ascending: true });
-        if (error) throw error;
-        allProducts = data;
-        renderProductsPage();
-      } catch (error) {
-        showNotification("error", "Gagal memuat produk: " + error.message);
-      }
-    }
+    // DIHAPUS: fungsi fetchProducts() tidak diperlukan lagi di client.
 
+    // Fungsi render produk (sama seperti aslinya, bekerja dengan data dari server)
     function renderProductsPage() {
-      let filtered = allProducts.filter(p => p.nama.toLowerCase().includes(searchTerm) || p.kategori.some(cat => cat.toLowerCase().includes(searchTerm)));
-      const totalPages = Math.ceil(filtered.length / pageSize);
-      const start = (currentPage - 1) * pageSize;
-      const pageItems = filtered.slice(start, start + pageSize);
-      grid.innerHTML = pageItems.map(p => `
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 flex flex-col justify-between transition hover:shadow-xl h-full">
-          <img src="${p.gambar}" alt="${p.nama}" class="rounded-xl w-full h-40 object-cover mb-3" loading="lazy" />
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-1 truncate">${p.nama}</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 capitalize">Kategori: ${p.kategori.join(", ")}</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-sm font-medium">
-            <button data-id="${p.id}" class="edit-btn text-primary-600 hover:underline">Edit</button>
-            <button data-id="${p.id}" class="delete-btn text-red-500 hover:underline">Hapus</button>
-          </div>
-        </div>
-      `).join("") || `<p class="col-span-full text-center text-gray-500">Produk tidak ditemukan.</p>`;
-      renderPagination(totalPages);
+        let filtered = allProducts.filter(p => p.nama.toLowerCase().includes(searchTerm) || p.kategori.some(cat => cat.toLowerCase().includes(searchTerm)));
+        const totalPages = Math.ceil(filtered.length / pageSize);
+        currentPage = Math.min(currentPage, totalPages || 1);
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = filtered.slice(start, start + pageSize);
+        grid.innerHTML = pageItems.map(p => `
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 flex flex-col justify-between transition hover:shadow-xl h-full">
+                <img src="${p.gambar}" alt="${p.nama}" class="rounded-xl w-full h-40 object-cover mb-3" loading="lazy" />
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-1 truncate">${p.nama}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 capitalize">Kategori: ${p.kategori.join(", ")}</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-sm font-medium">
+                    <button data-id="${p.id}" class="edit-btn text-blue-600 hover:underline">Edit</button>
+                    <button data-id="${p.id}" class="delete-btn text-red-500 hover:underline">Hapus</button>
+                </div>
+            </div>`).join("") || `<p class="col-span-full text-center text-gray-500">Produk tidak ditemukan.</p>`;
+        renderPagination(totalPages);
     }
 
+    // Fungsi render pagination (sama seperti aslinya)
     function renderPagination(totalPages) {
-      if (totalPages <= 1) return pagDiv.innerHTML = "";
-      let buttons = `
-        <button ${currentPage === 1 ? 'disabled class="opacity-50"' : ''} data-page="${currentPage - 1}" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300">Prev</button>
-      `;
-      for (let i = 1; i <= totalPages; i++) {
-        buttons += ` <button ${i === currentPage ? 'class="px-3 py-1 rounded bg-primary-600 text-white"' : `data-page="${i}" class="px-3 py-1 rounded dark:bg-gray-800 bg-gray-200 hover:bg-gray-300"`}>${i}</button>`;
-      }
-      buttons += ` <button ${currentPage === totalPages ? 'disabled class="opacity-50"' : ''} data-page="${currentPage + 1}" class="px-3 py-1 rounded dark:bg-gray-800 bg-gray-200 hover:bg-gray-300">Next</button>`;
-      pagDiv.innerHTML = buttons;
-      pagDiv.querySelectorAll("button[data-page]").forEach(btn => btn.addEventListener("click", () => { currentPage = Number(btn.getAttribute("data-page")); renderProductsPage(); }));
-    }
-
-    function resetForm() {
-      formEl.reset();
-      document.getElementById("product-id").value = "";
-      document.getElementById("existing-image-url").value = "";
-      document.getElementById("file-name").textContent = "";
-      document.getElementById("image-preview").classList.add("hidden");
-      document.getElementById("cancel-btn").classList.add("hidden");
-      document.querySelector(".submit-text").textContent = "Simpan";
-      document.getElementById("category-error").classList.add("hidden");
-      quill.root.innerHTML = "";
-      document.querySelectorAll(".category-checkbox").forEach(cb => cb.checked = false);
-    }
-
-    function showForm() {
-      formEl.classList.remove("hidden");
-      requestAnimationFrame(() => { formEl.classList.remove("opacity-0", "-translate-y-4"); formEl.classList.add("opacity-100", "translate-y-0"); });
-      formEl.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-
-    function hideForm() {
-      formEl.classList.remove("opacity-100", "translate-y-0");
-      formEl.classList.add("opacity-0", "-translate-y-4");
-      formEl.addEventListener("transitionend", () => formEl.classList.add("hidden"), { once: true });
-    }
-
-    async function enterEdit(id) {
-      try {
-        const { data, error } = await sb.from("produk").select("*").eq("id", id).single();
-        if (error) throw error;
-        document.getElementById("product-id").value = data.id;
-        document.getElementById("nama").value = data.nama;
-        document.getElementById("existing-image-url").value = data.gambar;
-        quill.root.innerHTML = data.deskripsi;
-        document.querySelectorAll(".category-checkbox").forEach(cb => { cb.checked = data.kategori.includes(cb.value); });
-        const imgPrev = document.getElementById("image-preview");
-        imgPrev.src = data.gambar;
-        imgPrev.classList.remove("hidden");
-        document.getElementById("file-name").textContent = "Gambar saat ini: " + data.gambar.split("/").pop();
-        document.querySelector(".submit-text").textContent = "Update";
-        document.getElementById("cancel-btn").classList.remove("hidden");
-        showForm();
-      } catch (error) {
-        showNotification("error", "Gagal memuat produk: " + error.message);
-      }
-    }
-
-    async function deleteProduct(id) {
-      if (!confirm("Apakah Anda yakin ingin menghapus produk ini?")) return;
-      try {
-        const { data } = await sb.from("produk").select("gambar").eq("id", id).single();
-        if (data?.gambar) {
-          const oldPath = new URL(data.gambar).pathname.split("/").slice(6).join("/");
-          await sb.storage.from("images").remove([oldPath]);
+        if (totalPages <= 1) return pagDiv.innerHTML = "";
+        let buttons = `<button ${currentPage === 1 ? 'disabled class="opacity-50"' : ''} data-page="${currentPage - 1}" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300">Prev</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            buttons += ` <button ${i === currentPage ? 'class="px-3 py-1 rounded bg-blue-600 text-white"' : `data-page="${i}" class="px-3 py-1 rounded dark:bg-gray-700 bg-gray-200 hover:bg-gray-300"`}>${i}</button>`;
         }
-        await sb.from("produk").delete().eq("id", id);
-        fetchProducts();
+        buttons += ` <button ${currentPage === totalPages ? 'disabled class="opacity-50"' : ''} data-page="${currentPage + 1}" class="px-3 py-1 rounded dark:bg-gray-700 bg-gray-200 hover:bg-gray-300">Next</button>`;
+        pagDiv.innerHTML = buttons;
+        pagDiv.querySelectorAll("button[data-page]").forEach(btn => btn.addEventListener("click", () => { currentPage = Number(btn.getAttribute("data-page")); renderProductsPage(); }));
+    }
+
+    // Fungsi reset form (sama seperti aslinya)
+    function resetForm() {
+        formEl.reset();
+        document.getElementById("product-id").value = "";
+        document.getElementById("existing-image-url").value = "";
+        document.getElementById("file-name").textContent = "";
+        document.getElementById("image-preview").classList.add("hidden");
+        document.getElementById("cancel-btn").classList.add("hidden");
+        document.querySelector(".submit-text").textContent = "Simpan";
+        document.getElementById("category-error").classList.add("hidden");
+        quill.root.innerHTML = "";
+        document.querySelectorAll(".category-checkbox").forEach(cb => cb.checked = false);
+    }
+    
+    // Fungsi UI show/hide form (sama seperti aslinya)
+    function showForm() {
+        formEl.classList.remove("hidden");
+        requestAnimationFrame(() => { formEl.classList.remove("opacity-0", "-translate-y-4"); formEl.classList.add("opacity-100", "translate-y-0"); });
+        formEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    function hideForm() {
+        formEl.classList.remove("opacity-100", "translate-y-0");
+        formEl.classList.add("opacity-0", "-translate-y-4");
+        formEl.addEventListener("transitionend", () => formEl.classList.add("hidden"), { once: true });
+    }
+
+    // Fungsi enterEdit (DIUBAH untuk memanggil API)
+    async function enterEdit(id) {
+        try {
+            // --- INI BAGIAN YANG DIUBAH ---
+            const response = await fetch(`/api/produk?id=${id}`);
+            if (!response.ok) throw new Error('Gagal memuat data produk untuk diedit');
+            const data = await response.json();
+            // -----------------------------
+
+            document.getElementById("product-id").value = data.id;
+            document.getElementById("nama").value = data.nama;
+            document.getElementById("existing-image-url").value = data.gambar;
+            quill.root.innerHTML = data.deskripsi;
+            document.querySelectorAll(".category-checkbox").forEach(cb => { cb.checked = data.kategori.includes(cb.value); });
+            const imgPrev = document.getElementById("image-preview");
+            imgPrev.src = data.gambar;
+            imgPrev.classList.remove("hidden");
+            document.getElementById("file-name").textContent = "Gambar saat ini: " + (data.gambar ? data.gambar.split("/").pop() : 'Tidak ada gambar');
+            document.querySelector(".submit-text").textContent = "Update";
+            document.getElementById("cancel-btn").classList.remove("hidden");
+            showForm();
+        } catch (error) {
+            showNotification("error", "Gagal memuat produk: " + error.message);
+        }
+    }
+
+    // Fungsi deleteProduct (DIUBAH untuk memanggil API)
+// Di dalam file produk.astro
+
+// Di dalam file produk.astro -> <script>
+
+async function deleteProduct(id) {
+    if (!confirm("Apakah Anda yakin ingin menghapus produk ini?")) return;
+
+    try {
+        // 1. Cari produk yang akan dihapus di dalam array allProducts
+        const productToDelete = allProducts.find(p => p.id == id);
+        if (!productToDelete) {
+            throw new Error("Produk tidak ditemukan di daftar saat ini.");
+        }
+
+        // 2. Ambil URL gambar dari data produk yang ditemukan
+        const gambarUrl = productToDelete.gambar;
+
+        // 3. Kirim request ke API dengan data yang lengkap
+        const response = await fetch(`/api/produk`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, gambar: gambarUrl }) 
+        });
+
+        if (!response.ok) {
+            const errorResult = await response.json();
+            throw new Error(errorResult.message || 'Gagal menghapus produk dari server');
+        }
+        
         showNotification("success", "Produk berhasil dihapus!");
-      } catch (error) {
+        
+        // Sekarang kita reload halaman, cara paling aman dan konsisten
+        window.location.reload();
+
+    } catch (error) {
         showNotification("error", "Gagal menghapus produk: " + error.message);
-      }
     }
+}
 
-    async function uploadImage(file) {
-      const path = `produk/${Date.now()}_${file.name}`;
-      const { data, error } = await sb.storage.from("images").upload(path, file, { cacheControl: "3600", upsert: false });
-      if (error) throw error;
-      return sb.storage.from("images").getPublicUrl(data.path).data.publicUrl;
-    }
+    // DIHAPUS: fungsi uploadImage() tidak diperlukan lagi di client.
 
-    function getKategori() {
-      return Array.from(document.querySelectorAll(".category-checkbox:checked")).map(cb => cb.value);
-    }
-
-    function slugify(str) {
-      return str.toString().normalize("NFKD").replace(/[^\w\s-]/g, "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-    }
-
+    // Fungsi helper (sama seperti aslinya)
+    function getKategori() { return Array.from(document.querySelectorAll(".category-checkbox:checked")).map(cb => cb.value); }
     function toggleSubmit(isLoading) {
-      const submitBtn = document.getElementById("submit-btn");
-      const spinner = document.getElementById("loading-spinner");
-      submitBtn.disabled = isLoading;
-      spinner.classList.toggle("hidden", !isLoading);
-      document.getElementById("category-error").classList.add("hidden");
+        document.getElementById("submit-btn").disabled = isLoading;
+        document.getElementById("loading-spinner").classList.toggle("hidden", !isLoading);
+        document.getElementById("category-error").classList.add("hidden");
     }
 
-    // Drag & Drop Image Preview
+    // Fungsi Drag & Drop (sama seperti aslinya)
     const dropArea = document.getElementById("drop-area");
     const fileInput = document.getElementById("image-file");
     const fileNameEl = document.getElementById("file-name");
     const imgPrev = document.getElementById("image-preview");
-
     dropArea.addEventListener("click", (e) => { if (e.target === dropArea) fileInput.click(); });
     fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      if (file) {
-        fileNameEl.textContent = file.name;
-        const reader = new FileReader();
-        reader.onload = (e) => { imgPrev.src = e.target.result; imgPrev.classList.remove("hidden"); };
-        reader.readAsDataURL(file);
-      }
-    });
-    ["dragover", "dragleave", "drop"].forEach(event => {
-      dropArea.addEventListener(event, (e) => {
-        e.preventDefault();
-        dropArea.classList.toggle("border-primary-500", event === "dragover");
-        if (event === "drop") {
-          const file = e.dataTransfer.files[0];
-          if (file && file.type.startsWith("image/")) {
-            fileInput.files = e.dataTransfer.files;
+        const file = fileInput.files[0];
+        if (file) {
             fileNameEl.textContent = file.name;
             const reader = new FileReader();
-            reader.onload = (ev) => { imgPrev.src = ev.target.result; imgPrev.classList.remove("hidden"); };
+            reader.onload = (e) => { imgPrev.src = e.target.result; imgPrev.classList.remove("hidden"); };
             reader.readAsDataURL(file);
-          }
         }
-      });
+    });
+    ["dragover", "dragleave", "drop"].forEach(event => {
+        dropArea.addEventListener(event, (e) => {
+            e.preventDefault();
+            dropArea.classList.toggle("border-blue-500", event === "dragover");
+            if (event === "drop") {
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith("image/")) {
+                    fileInput.files = e.dataTransfer.files;
+                    fileNameEl.textContent = file.name;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => { imgPrev.src = ev.target.result; imgPrev.classList.remove("hidden"); };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
     });
 
-    // Notification
+    // Fungsi notifikasi (sama seperti aslinya)
     function showNotification(type, message) {
-      const container = document.getElementById("notification-container");
-      const notification = document.createElement("div");
-      notification.className = `p-4 rounded-lg shadow-lg transform transition-all duration-300 ${type === "success" ? "bg-green-50 border-l-4 border-green-500 text-green-700" : type === "error" ? "bg-red-50 border-l-4 border-red-500 text-red-700" : "bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700"}`;
-      notification.innerHTML = `<div class="flex items-start"><svg class="h-6 w-6 mr-2 ${type === "success" ? "text-green-500" : type === "error" ? "text-red-500" : "text-yellow-500"}" fill="none" viewBox="0 0 24 24" stroke="currentColor">${type === "success" ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />` : type === "error" ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />` : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />`}</svg><div>${message}</div></div>`;
-      container.appendChild(notification);
-      setTimeout(() => { notification.classList.add("opacity-100", "translate-x-0"); }, 10);
-      setTimeout(() => { notification.classList.remove("opacity-100", "translate-x-0"); notification.classList.add("opacity-0", "translate-x-full"); setTimeout(() => container.removeChild(notification), 300); }, 5000);
-      notification.addEventListener("click", () => { notification.classList.remove("opacity-100", "translate-x-0"); notification.classList.add("opacity-0", "translate-x-full"); setTimeout(() => container.removeChild(notification), 300); });
+        const container = document.getElementById("notification-container");
+        const notification = document.createElement("div");
+        const style = {
+            success: "bg-green-50 border-l-4 border-green-500 text-green-700",
+            error: "bg-red-50 border-l-4 border-red-500 text-red-700",
+            warning: "bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700"
+        };
+        notification.className = `p-4 rounded-lg shadow-lg transform transition-all duration-300 ${style[type] || style.warning}`;
+        notification.innerHTML = `<div class="flex items-start"><p>${message}</p></div>`;
+        container.appendChild(notification);
+        setTimeout(() => { notification.style.opacity = '0'; notification.style.transform = 'translateX(100%)'; setTimeout(() => notification.remove(), 300); }, 5000);
+        notification.addEventListener("click", () => notification.remove());
     }
+
   </script>
-</body>
-</html>
+</section>

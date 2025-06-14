@@ -2,63 +2,293 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import HeroSection from '../../components/HeroSection.astro';
+import Wapop from '../../components/wapop.astro';
+import { supabase } from '../../lib/supabase';
+
+type Produk = { slug: string; gambar: string; nama: string; kategori: string[] };
+
+// Ambil data produk
+const { data: posts = [], error: postError } = await supabase
+  .from<Produk>('produk')
+  .select('*');
+if (postError) console.error('Gagal ambil produk:', postError.message);
+
+// Ambil data kategori dan subkategori
+const { data: kategoriData = [], error: kategoriError } = await supabase
+  .from('kategori')
+  .select('*');
+if (kategoriError) console.error('Gagal ambil kategori:', kategoriError.message);
+
+// Susun data kategori menjadi nested structure
+const categories = kategoriData
+  .filter((k) => !k.parent_slug)
+  .map((parent) => ({
+    name: parent.name,
+    slug: parent.slug,
+    subcategories: kategoriData
+      .filter((sub) => sub.parent_slug === parent.slug)
+      .map((sub) => ({ name: sub.name, slug: sub.slug })),
+  }));
 ---
 
-<Layout title="Produk - Dye Apparel">
+<Layout title="Kategori - Dye Apparel" description="Filter produk berdasarkan kategori dengan tombol Apply">
   <Header />
-  <main>
-    
-    <section class="py-16 bg-white dark:bg-gray-800">
-      <div class="container-custom">
-        
-        <div class="mb-24">
-          <div class="grid md:grid-cols-2 gap-12 items-center mb-12">
-            <div class="order-2 md:order-1 rounded-lg overflow-hidden shadow-xl">
-              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="TechNova Team" class="w-full h-auto" />
+
+  <main class="container-custom flex flex-col lg:flex-row py-8 gap-8">
+    <!-- Sidebar untuk filter kategori (versi baru) -->
+    <aside
+      id="sidebar"
+      class="w-full lg:w-1/4 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md
+             transition-all duration-500 ease-in-out transform animate-fade-in"
+    >
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Filter</h2>
+      <hr class="border-gray-200 dark:border-gray-700 my-4" />
+
+      <form id="category-filter-form" class="space-y-4">
+        {categories.map((cat) => (
+          <details
+            class="group transition-all duration-300 ease-in-out"
+            key={cat.slug}
+          >
+            <summary
+              class="flex justify-between items-center cursor-pointer font-medium text-gray-900 dark:text-gray-100"
+            >
+              {cat.name}
+              <span class="transition-transform duration-200 group-open:rotate-180">▾</span>
+            </summary>
+
+            <div
+              class="ml-4 overflow-hidden transition-all duration-300 ease-in-out 
+                     group-open:max-h-96 max-h-0 opacity-0 group-open:opacity-100 mt-2 space-y-2"
+            >
+              {cat.subcategories.map((sub) => (
+                <label
+                  class="flex items-center ml-4 space-x-2 cursor-pointer group"
+                  key={sub.slug}
+                >
+                  <input
+                    type="checkbox"
+                    id={sub.slug}
+                    name="category"
+                    value={sub.slug}
+                    class="peer hidden"
+                  />
+                  <div
+                    class="w-5 h-5 flex items-center justify-center border-2 rounded-md border-gray-300
+                           dark:border-gray-600 bg-white dark:bg-gray-800
+                           group-hover:border-primary-400 peer-checked:border-primary-600
+                           peer-checked:bg-primary-600 dark:peer-checked:bg-primary-500
+                           transition-all duration-200"
+                  >
+                    <svg
+                      class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                    >
+                      <polyline points="4 11 8 15 16 6" />
+                    </svg>
+                  </div>
+                  <span class="text-sm text-gray-700 dark:text-gray-300">
+                    {sub.name}
+                  </span>
+                </label>
+              ))}
             </div>
-            <div class="order-1 md:order-2">
-              <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Judul Brok</h2>
-              <p class="text-gray-600 dark:text-gray-300 mb-6">
-               Sablon Print Mesin Digital DTF ( Direct To Film )
-              </p>
-              <ul>
-                <li>Bahan Kaos Cotton Combed 24s Premium</li>
-                <li>Size: S, M, L, XL, XXL, XXXL</li>
-                <li>Ukuran Cetak Design Logo / A4 / A3 ( Depan/Blakang )</li>
-                <ul>Ukuran Kaos :
-                  <li>S (Lebar 45 cm x Tinggi 67 cm)</li>
-                  <li>M (Lebar 50 cm x Tinggi 70 cm)</li>
-                  <li>L (Lebar 52 cm x Tinggi 72 cm)</li>
-                  <li>XL (Lebar 54 cm x Tinggi 74 cm)</li>
-                </ul>  
-              </ul>
-              <div class="flex flex-wrap gap-4 mb-6">
-                <div class="flex items-center">
-                  <svg class="w-5 h-5 text-primary-600 dark:text-primary-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  <span class="text-gray-700 dark:text-gray-300">10x User Growth</span>
-                </div>
-                <div class="flex items-center">
-                  <svg class="w-5 h-5 text-primary-600 dark:text-primary-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  <span class="text-gray-700 dark:text-gray-300">40% Cost Reduction</span>
-                </div>
-                <div class="flex items-center">
-                  <svg class="w-5 h-5 text-primary-600 dark:text-primary-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  <span class="text-gray-700 dark:text-gray-300">99.9% Uptime</span>
-                </div>
-              </div>
-              <a href="#" class="btn-primary">Read Full Case Study</a>
-            </div>
-          </div>
+          </details>
+        ))}
+
+        <div class="flex gap-2 mt-10">
+          <button
+            id="apply-filter-btn"
+            type="button"
+            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded 
+                   hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 
+                   transition-all duration-300"
+          >
+            Apply
+          </button>
+          <button
+            id="reset-filter-btn"
+            type="button"
+            class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 
+                   rounded hover:bg-gray-300 dark:hover:bg-gray-600 
+                   focus:outline-none focus:ring-2 focus:ring-gray-400 
+                   transition-all duration-300"
+          >
+            Reset
+          </button>
         </div>
-        </div>
+      </form>
+    </aside>
+
+    <!-- Konten utama: Daftar produk -->
+    <section class="w-full lg:w-3/4">
+      <div data-animate="fade-in-scale" data-delay={0}>
+        <HeroSection
+          title="Kategori"
+          highlightText=" Terbaik"
+          description="Pilih kategori layanan kami."
+        />
       </div>
+
+      <div
+        id="product-grid"
+        class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 transition-opacity duration-300"
+      >
+        {posts.map((post, i) => (
+          <a
+            href={`/produk/${post.slug}`}
+            class="card block border border-gray-200 dark:border-gray-700 
+                   rounded-xl overflow-hidden shadow-sm hover:scale-105 transform transition"
+            data-categories={post.kategori.join(' ')}
+            data-animate="fade-in-scale"
+            data-delay={(i + 1) * 100}
+            key={post.slug}
+          >
+            <img src={post.gambar} alt={post.nama} class="w-full h-48 object-cover" />
+            <div class="p-4">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{post.nama}</h3>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div id="pagination" class="flex justify-center items-center space-x-2 mt-8"></div>
     </section>
   </main>
+
   <Footer />
-</Layout> 
+  <Wapop />
+
+  <!-- Skrip filter dan pagination (versi baru) -->
+<script is:inline type="module">
+  function initFilter() {
+    const form = document.getElementById('category-filter-form');
+    const applyBtn = document.getElementById('apply-filter-btn');
+    const resetBtn = document.getElementById('reset-filter-btn');
+    const grid = document.getElementById('product-grid');
+    let cards = Array.from(grid.querySelectorAll('.card'));
+    const paginationEl = document.getElementById('pagination');
+    let currentPage = 1;
+    const pageSize = 9;
+
+    function renderPagination(totalPages) {
+      if (totalPages <= 1) {
+        paginationEl.innerHTML = '';
+        return;
+      }
+      let html = '';
+      html += `<button ${
+        currentPage === 1 ? 'disabled' : ''
+      } data-page="${currentPage - 1}" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300">Prev</button>`;
+
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button ${
+          i === currentPage
+            ? 'class="px-3 py-1 rounded bg-primary-600 text-white"'
+            : `data-page="${i}" class="px-3 py-1 dark:bg-gray-800 rounded bg-gray-200 hover:bg-gray-300"`
+        }> ${i} </button>`;
+      }
+
+      html += `<button ${
+        currentPage === totalPages ? 'disabled' : ''
+      } data-page="${currentPage + 1}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-800">Next</button>`;
+      paginationEl.innerHTML = html;
+
+      paginationEl
+        .querySelectorAll('button[data-page]')
+        .forEach((btn) =>
+          btn.addEventListener('click', () => {
+            currentPage = +btn.dataset.page;
+            applyFilter();
+          })
+        );
+    }
+
+    function updateDisplay() {
+      // Ambil semua nilai checkbox yang dicentang
+      const checked = Array.from(form.elements['category'])
+        .filter((i) => i.checked)
+        .map((i) => i.value);
+
+      // Filter card berdasarkan category yang dicentang
+      let filtered = cards.filter((c) =>
+        !checked.length ||
+        c.dataset.categories.split(' ').some((cat) => checked.includes(cat))
+      );
+
+      // Sembunyikan semua kartu dulu
+      cards.forEach((c) => (c.style.display = 'none'));
+
+      // Hitung paginasi dan tampilkan kartu sesuai halaman
+      const totalPages = Math.ceil(filtered.length / pageSize);
+      const start = (currentPage - 1) * pageSize;
+
+      filtered.slice(start, start + pageSize).forEach((c, idx) => {
+        c.style.display = 'block';
+        c.dataset.animate = 'fade-in-scale';
+        c.dataset.delay = `${idx * 100}`;
+      });
+
+      renderPagination(totalPages); 
+    }
+
+    function applyFilter() {
+      grid.classList.add('opacity-0');
+      grid.addEventListener(
+        'transitionend',
+        function handler() {
+          grid.removeEventListener('transitionend', handler);
+          updateDisplay();
+          requestAnimationFrame(() => grid.classList.remove('opacity-0'));
+        },
+        { once: true }
+      );
+    }
+
+    // Event Listener tombol Apply
+    applyBtn.addEventListener('click', () => {
+      currentPage = 1;
+      applyFilter();
+      const params = Array.from(form.elements['category'])
+        .filter((i) => i.checked)
+        .map((i) => i.value)
+        .join(',');
+      history.replaceState(
+        null,
+        '',
+        window.location.pathname + (params ? `?category=${params}` : '')
+      );
+    });
+
+    // Event Listener tombol Reset
+    resetBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      form.querySelectorAll('input').forEach((i) => (i.checked = false));
+      applyBtn.click();
+    });
+
+    // Inisialisasi checkbox dari URL (jika ada parameter)
+    const params = new URLSearchParams(window.location.search);
+    const arr = params.get('category')?.split(',') || [];
+    document
+      .querySelectorAll('input[name="category"]')
+      .forEach((i) => {
+        i.checked = arr.includes(i.value);
+      });
+
+    // === Perubahan utama di sini ===
+    // Tampilkan semua produk langsung, tanpa opacity-0, ketika pertama kali load
+    updateDisplay();
+    // ============================== 
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initFilter();
+  });
+</script>
+
+</Layout>

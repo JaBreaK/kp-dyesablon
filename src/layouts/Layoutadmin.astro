@@ -18,12 +18,19 @@ const {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>{title}</title>
   <!-- Deskripsi meta, bisa digunakan SEO atau social preview -->
   <meta name="description" content={description} />
   <!-- QuillJS CSS jika memang butuh editor -->
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        if (!localStorage.getItem("staffSession")) return void (window.location.replace("/login"));
+
+    });
+  </script>
 
   <style>
     /* Loading button styles */
@@ -142,7 +149,7 @@ const {
     <!-- Konten utama -->
     <div class="flex-1 flex flex-col">
       <!-- Header -->
-      <header class="flex items-center justify-between bg-white px-4 py-2 shadow-sm">
+      <header class="relative z-20 flex items-center justify-between bg-white px-4 py-2 shadow-sm">
         <div class="flex items-center">
           <!-- Tombol toggle sidebar untuk mobile -->
           <button id="btn-sidebar-toggle" class="mr-2 md:hidden focus:outline-none" aria-label="Toggle sidebar">
@@ -156,7 +163,7 @@ const {
         <div class="relative">
           <!-- Profile button & dropdown -->
           <button id="profile-button" class="flex items-center space-x-2 focus:outline-none">
-            <img src="https://raw.githubusercontent.com/JaBreaK/db/refs/heads/main/kiles-removebg-preview.png"
+            <img src="/user.svg"
                  alt="Avatar" class="w-8 h-8 rounded-full" />
             <span id="admin-name" class="text-sm font-medium text-gray-700">Admin</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -164,8 +171,9 @@ const {
             </svg>
           </button>
           <div id="profile-menu" class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-10">
-            <button id="btn-logout" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700">Logout</button>
+
             <button id="recovery" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700">Ganti Password</button>
+                        <button id="btn-logout" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700">Logout</button>
           </div>
         </div>
       </header>

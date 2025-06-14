@@ -1,6 +1,13 @@
+// supabase.ts
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://pmfzypvynmyotmvbgafi.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM' // ambil dari Supabase -> Project -> API -> anon key
+// Baca dari env. Pastikan VITE_SUPABASE_URL dan VITE_SUPABASE_KEY sudah di-define di .env
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_KEY as string
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+if (!supabaseUrl || !supabaseAnonKey) {
+  // Opsional: throw error saat env belum di-set, supaya tidak sulit debugging
+  throw new Error('Missing SUPABASE_URL or SUPABASE_KEY in environment variables')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)

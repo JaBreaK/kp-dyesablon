@@ -1,9 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
+---
+// src/pages/staff-login.astro
+import { supabase } from '../lib/supabase';
+
+let errorMsg = '';
+let formPosted = false;
+let loginSuccessData = null; // Variabel untuk menampung data jika login sukses
+
+if (Astro.request.method === 'POST') {
+  formPosted = true;
+  const formData = await Astro.request.formData();
+  const email = formData.get('email')?.toString();
+  const password = formData.get('password')?.toString();
+
+  // Validasi sederhana
+  if (!email || !password) {
+    errorMsg = 'Email dan password tidak boleh kosong.';
+  } else {
+    // PERHATIAN: Membandingkan password plaintext seperti ini sangat tidak aman untuk produksi!
+    // Sebaiknya gunakan sistem otentikasi Supabase (Auth) yang menggunakan hash.
+    const { data, error } = await supabase
+      .from('staff')
+      .select('id, email')
+      .eq('email', email)
+      .eq('password', password)
+      .single();
+
+    if (error || !data) {
+      errorMsg = 'Email atau password salah.';
+    } else {
+      // Jika berhasil, siapkan data untuk dikirim ke skrip di client-side
+      loginSuccessData = {
+        id: data.id,
+        email: data.email,
+      };
+    }
+  }
+}
+---
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Staff Login</title>
+        <script>
+        // Skrip ini dieksekusi secepat mungkin di client untuk mengecek sesi.
+        // Jika sudah ada, langsung redirect tanpa perlu render halaman login.
+        try {
+            const staffSession = localStorage.getItem('staffSession');
+            if (staffSession) {
+                window.location.href = '/admin';
+            }
+        } catch (e) {
+            console.error("Tidak bisa mengakses localStorage:", e);
+        }
+    </script>
     <style>
       @keyframes fade-in-up {
         0% { opacity: 0; transform: translateY(20px); }
@@ -38,59 +88,11 @@
       .back-btn:hover svg {
         transform: translateX(-3px);
       }
+
+              .error-msg { color: #d93025; text-align: center; margin-top: 1rem; }
     </style>
 
-    <script type="module">
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-      const supabaseUrl = 'https://pmfzypvynmyotmvbgafi.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM';
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const staffSession = localStorage.getItem('staffSession');
-        if (staffSession) {
-          window.location.href = '/admin';
-          return;
-        }
-
-        const form = document.querySelector('.login-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const errorMsg = document.createElement('p');
-        errorMsg.id = 'error-msg';
-        errorMsg.className = 'text-red-500 text-sm mt-2 hidden';
-        form.appendChild(errorMsg);
-
-        form.addEventListener('submit', async e => {
-          e.preventDefault();
-          errorMsg.textContent = '';
-          errorMsg.classList.add('hidden');
-
-          const email = emailInput.value.trim();
-          const password = passwordInput.value;
-
-          const { data, error } = await supabase
-            .from('staff')
-            .select('id, email')
-            .eq('email', email)
-            .eq('password', password)
-            .single();
-
-          if (error || !data) {
-            errorMsg.textContent = 'Email atau password salah';
-            errorMsg.classList.remove('hidden');
-          } else {
-            localStorage.setItem('staffSession', JSON.stringify({
-              id: data.id,
-              email: data.email,
-              loggedAt: new Date().toISOString()
-            }));
-            window.location.href = '/admin';
-          }
-        });
-      });
-    </script>
   </head>
 
   <body class="bg-gradient-to-br from-[#f5f7fa] to-[#c3cfe2]">
@@ -116,12 +118,13 @@
           <div class="w-12 h-1 bg-blue-500 rounded-full mx-auto"></div>
         </div>
 
-        <form class="login-form space-y-6">
+        <form method="POST" class="login-form space-y-6">
           <div>
             <label for="email" class="block text-sm font-medium text-slate-700 mb-2">Email</label>
             <input 
               id="email" 
-              type="email" 
+              type="email"
+              name="email" 
               placeholder="Enter your email" 
               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg 
                      focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
@@ -135,7 +138,8 @@
             <label for="password" class="block text-sm font-medium text-slate-700 mb-2">Password</label>
             <input 
               id="password" 
-              type="password" 
+              type="password"
+              name="password" 
               placeholder="••••••••" 
               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg 
                      focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
@@ -157,9 +161,21 @@
 
           <p class="text-center text-sm text-gray-500 mt-4">
             <a href="/recovery" class="text-blue-600 hover:underline">Lupa password?</a>
-          </p>
+          {formPosted && errorMsg && <p class="error-msg">{errorMsg}</p>}
         </form>
       </div>
     </main>
+        {loginSuccessData && (
+      <script define:vars={{ sessionData: loginSuccessData }}>
+        // Simpan data sesi yang didapat dari server ke localStorage
+        localStorage.setItem("staffSession", JSON.stringify({
+          ...sessionData,
+          loggedAt: new Date().toISOString()
+        }));
+        
+        // Redirect ke halaman admin
+        window.location.href = "/admin";
+      </script>
+    )}
   </body>
 </html>

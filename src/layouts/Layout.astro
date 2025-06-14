@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/transitions.css';
 import { ViewTransitions } from 'astro:transitions';
 
+
 export interface Props {
   title: string;
   description?: string;
@@ -22,8 +23,12 @@ const {
 }"
  x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))" :class="{ 'dark': darkMode }">
   <head>
-    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+    
+    
+    
+
     <script>
+      
       
       // cek localStorage dulu
       const stored = localStorage.getItem('darkMode');
@@ -34,7 +39,7 @@ const {
         document.documentElement.classList.add('dark');
       }
     </script>
-    <script src="https://unpkg.com/alpinejs" defer></script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

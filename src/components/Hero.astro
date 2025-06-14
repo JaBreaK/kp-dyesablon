@@ -1,16 +1,56 @@
-<!-- Hero Carousel Section -->
+---
+// Import supabase client yang membaca env
+import { supabase } from '../lib/supabase';
+
+// Fetch data banner di server (Astro SSR)
+const { data: banners, error } = await supabase
+  .from('banner')
+  .select('gambar')        // atau kolom lain jika perlu
+  .order('nama', { ascending: true }); // sesuai urutan
+
+if (error) {
+  console.error('Error fetch banner SSR:', error);
+  // fallback: bisa set banners = [] atau default images
+}
+
+// Proses jadi array URL
+const bannerUrls = Array.isArray(banners)
+  ? banners
+      .map(item => {
+        let url = item.gambar;
+        // jika di DB simpan path saja
+        if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+          // supabase.ts biasanya sudah kenal BUCKET, tapi di SSR kita tahu PUBLIC URL:
+          // Bisa gunakan import.meta.env.VITE_SUPABASE_URL jika perlu:
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const bucket = 'images'; // sesuaikan
+          url = `${supabaseUrl}/storage/v1/object/public/${bucket}/${url}`;
+        }
+        return url;
+      })
+      .filter(url => !!url)
+  : [];
+---
 <section id="hero-carousel" class="relative overflow-hidden h-screen hero-section">
-  <!-- Slides Container -->
   <div id="slides" class="absolute inset-0">
-    <!-- Slides akan di-inject di sini -->
+    {bannerUrls.length === 0 ? (
+      // fallback: satu slide statis
+      <div class="absolute inset-0 bg-center bg-cover opacity-100 transition-opacity duration-1000" style="background-image: url('/default-banner.jpg')"></div>
+    ) : (
+      bannerUrls.map((url, idx) => (
+        // semua slide di-generate, tapi kita set kelas awal opacity-0 kecuali idx=0 nanti JS client toggling
+        <div
+          class="absolute inset-0 bg-center bg-cover filter blur-[3px] opacity-0 transition-opacity duration-1000"
+          data-index={idx}
+          style={`background-image: url('${url}')`}
+        ></div>
+      ))
+    )}
   </div>
 
-  <!-- Dark Overlay for Contrast -->
+  <!-- overlay & konten hero -->
   <div class="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
-
-  <!-- Content -->
   <div class="relative z-10 container-custom flex items-center justify-center h-full">
-    <!-- Hero Content -->
     <div class="text-white text-center px-4">
       <h1 class="text-4xl sm:text-6xl font-bold">
         <span class="font-brand1 text-[#D4AF37]">DYE</span>
@@ -24,135 +64,57 @@
   </div>
 </section>
 
-<!-- Script Supabase & Carousel Logic -->
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-  // ======= KONFIGURASI SUPABASE =======
-  const SUPABASE_URL = 'https://pmfzypvynmyotmvbgafi.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZnp5cHZ5bm15b3RtdmJnYWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNTcxNTgsImV4cCI6MjA2MTczMzE1OH0.NimEhbTS9Rz_GGXpEABU_rWunPB6TUN7S4ufTS7FNiM'; // <-- Ganti dengan anon key Anda
-  const TABLE_NAME = 'banner'; // tabel banner
-  // Jika kolom 'gambar' hanya menyimpan path (misal 'banner/xxx.png'), 
-  // Anda perlu juga BUCKET_NAME untuk resolve public URL. 
-  // Jika kolom 'gambar' sudah URL penuh, ignore BUCKET_NAME.
-  const BUCKET_NAME = 'images'; 
-  // Prefix public URL Supabase Storage (jika butuh parse/resolve):
-  const STORAGE_PUBLIC_BASE = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/`;
-  // ==================================
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // Variabel interval dan index carousel
+<!-- Skrip untuk rotasi slide di client -->
+<script type="module" client:load>
+  // Logika carousel client hanya untuk toggling opacity slide yang sudah di-generate SSR
   let carouselIntervalId = null;
   let carouselCurrentIndex = 0;
 
-  // Inisiasi carousel: fetch data banner, generate slides, set interval
-  async function initHeroCarousel() {
-    // Bersihkan interval lama jika ada
-    if (carouselIntervalId) {
-      clearInterval(carouselIntervalId);
-      carouselIntervalId = null;
-    }
+  function initHeroCarousel() {
     const slidesContainer = document.getElementById('slides');
-    if (!slidesContainer) {
-      console.warn('Hero carousel: elemen #slides tidak ditemukan');
-      return;
-    }
-    // Kosongkan kontainer slide agar tak duplikasi
-    slidesContainer.innerHTML = '';
+    if (!slidesContainer) return;
+
+    // Pastikan semua slide disembunyikan, lalu tampilkan index 0
+    const slides = Array.from(slidesContainer.children);
+    if (slides.length === 0) return;
+
+    // sembunyikan semua
+    slides.forEach(slide => {
+      slide.classList.remove('opacity-100');
+      slide.classList.add('opacity-0');
+    });
+    // tampilkan slide pertama
+    slides[0].classList.remove('opacity-0');
+    slides[0].classList.add('opacity-100');
     carouselCurrentIndex = 0;
 
-    // 1. Fetch data banner dari Supabase
-    const { data: banners, error } = await supabase
-      .from(TABLE_NAME)
-      .select('gambar') // ambil kolom gambar saja; bisa tambahkan kolom lain jika perlu urutan tertentu
-      .order('nama', { ascending: true }); // urutkan sesuai kolom yang diinginkan
-    if (error) {
-      console.error('Error fetch banner untuk carousel:', error);
-      // fallback: Anda bisa menampilkan slide default atau keluar
-      return;
-    }
-    if (!banners || banners.length === 0) {
-      console.warn('Tidak ada data banner untuk carousel');
-      // opsional: tampilkan fallback slide statis
-      return;
-    }
-
-    // 2. Generate slide elements berdasarkan data
-    banners.forEach((item, idx) => {
-      const div = document.createElement('div');
-      // Kita beri class absolute inset-0 bg-cover blur opacity-0 transition
-      div.className = 'absolute inset-0 bg-center bg-cover filter blur-[3px] opacity-0 transition-opacity duration-1000';
-      div.dataset.index = idx;
-      // Tentukan URL gambar:
-      let imageUrl = item.gambar;
-      // Jika kolom 'gambar' menyimpan path saja, resolve menjadi publicUrl:
-      if (imageUrl && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
-        imageUrl = STORAGE_PUBLIC_BASE + imageUrl;
-      }
-      // Jika masih null/undefined, bisa skip atau gunakan fallback:
-      if (!imageUrl) {
-        console.warn(`Banner index ${idx} tidak punya URL gambar, skip slide`);
-        return;
-      }
-      div.style.backgroundImage = `url(${imageUrl})`;
-      slidesContainer.appendChild(div);
-    });
-
-    const slideCount = slidesContainer.children.length;
-    if (slideCount === 0) {
-      console.warn('Tidak ada slide valid setelah generate');
-      return;
-    }
-
-    // 3. Fungsi untuk menampilkan slide berdasarkan index
-    function showSlide(index) {
-      const slides = slidesContainer.children;
-      if (!slides || slides.length === 0) return;
-      // sembunyikan semua
-      for (const slide of slides) {
-        slide.classList.remove('opacity-100');
-        slide.classList.add('opacity-0');
-      }
-      // tampilkan slide idx
-      const idx = index % slideCount;
-      slides[idx].classList.remove('opacity-0');
-      slides[idx].classList.add('opacity-100');
-      carouselCurrentIndex = idx;
-    }
-
-    // 4. Next slide
-    function nextSlide() {
-      showSlide((carouselCurrentIndex + 1) % slideCount);
-    }
-
-    // 5. Inisialisasi tampilan pertama dan interval
-    showSlide(0);
-    carouselIntervalId = setInterval(nextSlide, 5000);
+    // interval
+    if (carouselIntervalId) clearInterval(carouselIntervalId);
+    carouselIntervalId = setInterval(() => {
+      // sembunyikan current
+      slides[carouselCurrentIndex].classList.remove('opacity-100');
+      slides[carouselCurrentIndex].classList.add('opacity-0');
+      // next index
+      carouselCurrentIndex = (carouselCurrentIndex + 1) % slides.length;
+      slides[carouselCurrentIndex].classList.remove('opacity-0');
+      slides[carouselCurrentIndex].classList.add('opacity-100');
+    }, 5000);
   }
 
-  // Cleanup sebelum Turbo cache halaman
   function cleanupHeroCarousel() {
     if (carouselIntervalId) {
       clearInterval(carouselIntervalId);
       carouselIntervalId = null;
     }
-    const slidesContainer = document.getElementById('slides');
-    if (slidesContainer) {
-      slidesContainer.innerHTML = '';
-    }
   }
 
-  // Pada Astro, ketika halaman dimuat ulang via Turbo (partial navigation), 
-  // kita hook event astro:page-load agar inisiasi ulang carousel.
-  document.addEventListener('astro:page-load', () => {
-    initHeroCarousel();
-  });
-  // Jika tidak pakai Astro/Turbo, Anda bisa inisiasi di DOMContentLoaded:
   document.addEventListener('DOMContentLoaded', () => {
     initHeroCarousel();
   });
-  // Jika perlu cleanup pada unload, Anda bisa listen sebelum Turbo cache:
+  // Jika kamu menggunakan Astro partial navigation / Turbo:
+  document.addEventListener('astro:page-load', () => {
+    initHeroCarousel();
+  });
   document.addEventListener('astro:before-leave', () => {
     cleanupHeroCarousel();
   });

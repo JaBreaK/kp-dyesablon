@@ -233,7 +233,7 @@ const categories = kategoriData
         c.dataset.delay = `${idx * 100}`;
       });
 
-      renderPagination(totalPages);
+      renderPagination(totalPages); 
     }
 
     function applyFilter() {
@@ -250,19 +250,31 @@ const categories = kategoriData
     }
 
     // Event Listener tombol Apply
-    applyBtn.addEventListener('click', () => {
-      currentPage = 1;
-      applyFilter();
-      const params = Array.from(form.elements['category'])
-        .filter((i) => i.checked)
-        .map((i) => i.value)
-        .join(',');
-      history.replaceState(
-        null,
-        '',
-        window.location.pathname + (params ? `?category=${params}` : '')
-      );
-    });
+applyBtn.addEventListener('click', () => {
+  // Kode kamu yang sudah ada
+  currentPage = 1;
+  applyFilter();
+  const params = Array.from(form.elements['category'])
+    .filter((i) => i.checked)
+    .map((i) => i.value)
+    .join(',');
+  history.replaceState(
+    null,
+    '',
+    window.location.pathname + (params ? `?category=${params}` : '')
+  );
+
+  // --- INI TAMBAHANNYA ---
+  
+  // 1. Cari elemen tujuan dengan id 'produk'
+  const produkSection = document.getElementById('product-grid');
+
+  // 2. Jika elemennya ada, perintahkan browser untuk scroll ke sana
+  // Opsi `behavior: 'smooth'` membuat scroll-nya jadi halus (animasi), bukan loncat.
+  if (produkSection) {
+    produkSection.scrollIntoView({ behavior: 'smooth' });
+  }
+});
 
     // Event Listener tombol Reset
     resetBtn.addEventListener('click', (e) => {

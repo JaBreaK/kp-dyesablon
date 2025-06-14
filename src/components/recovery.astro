@@ -1,0 +1,125 @@
+---
+import { supabase } from '../lib/supabase'; // pakai .env dari SSR
+
+// Props dan handler SSR
+const url = new URL(Astro.request.url);
+const method = Astro.request.method;
+
+let step = 'email';
+let email = '';
+let errorMsg = '';
+let successMsg = '';
+let showPasswordForm = false;
+
+// 1. Tambahkan variabel penanda untuk redirect
+let shouldRedirect = false;
+
+if (method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+
+  if (action === 'check') {
+    email = formData.get('email')?.toString().trim() ?? '';
+
+    if (email) {
+      const { data, error } = await supabase
+        .from('staff')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (data) {
+        showPasswordForm = true;
+        step = 'password';
+      } else {
+        errorMsg = 'Email tidak ditemukan!';
+      }
+    }
+  }
+
+  if (action === 'reset') {
+    // Ambil email lagi dari form untuk ditampilkan di halaman sukses
+    email = formData.get('email')?.toString() ?? '';
+    const password = formData.get('newPassword')?.toString();
+    
+    // Kita perlu ID staff untuk update, jadi kita fetch dulu
+    const { data: staffData } = await supabase.from('staff').select('id').eq('email', email).single();
+
+    if (staffData && password) {
+      const { error } = await supabase
+        .from('staff')
+        .update({ password })
+        .eq('id', staffData.id);
+
+      if (!error) {
+        successMsg = 'Password berhasil diubah! Anda akan dialihkan...';
+        step = 'success'; // Ganti step agar form hilang & hanya pesan sukses yg tampil
+        
+        // 2. Set penanda redirect menjadi true
+        shouldRedirect = true; 
+
+      } else {
+        errorMsg = 'Gagal mengubah password.';
+        step = 'password'; // Tetap di halaman password jika gagal
+      }
+    }
+  }
+}
+---
+<style>
+  /* ... CSS kamu tidak perlu diubah, tetap di sini ... */
+  @keyframes fade-in-up { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+  .animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
+  .back-btn { position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 8px; color: #3b82f6; font-weight: 500; padding: 8px 16px; border-radius: 9999px; transition: all 0.3s ease; background-color: rgba(59, 130, 246, 0.1); }
+  .back-btn:hover { background-color: rgba(59, 130, 246, 0.2); transform: translateX(-4px); }
+  .back-btn svg { transition: transform 0.3s ease; }
+  .back-btn:hover svg { transform: translateX(-3px); }
+</style>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+    <a href="/admin" class="back-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+      Back to Home
+    </a>
+    <main class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md space-y-6 animate-fade-in-up">
+            <h2 class="text-2xl font-bold text-center text-blue-600">Lupa Password</h2>
+
+            {errorMsg && <p class="text-red-500 text-sm text-center">{errorMsg}</p>}
+            {successMsg && <p class="text-green-600 font-semibold text-lg text-center">{successMsg}</p>}
+
+            {step === 'email' && (
+              <form method="POST" class="space-y-4">
+                  <input type="hidden" name="action" value="check" />
+                  <div>
+                      <label class="block mb-1 text-sm font-medium text-gray-700">Email</label>
+                      <input name="email" type="email" required placeholder="Masukkan email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none text-gray-800 placeholder-gray-400 focus:scale-105 focus:shadow-lg" />
+                  </div>
+                  <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition">Cek Email</button>
+              </form>
+            )}
+
+            {step === 'password' && (
+              <form method="POST" class="space-y-4">
+                  <input type="hidden" name="action" value="reset" />
+                  {/* Kirim email juga agar bisa dicari ID-nya saat reset */}
+                  <input type="hidden" name="email" value={email} />
+                  <div>
+                      <label class="block mb-1 text-sm font-medium text-gray-700">Password Baru</label>
+                      <input name="newPassword" type="password" required placeholder="Masukkan password baru" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none text-gray-800 placeholder-gray-400 focus:scale-105 focus:shadow-lg" />
+                  </div>
+                  <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition">Ganti Password</button>
+              </form>
+            )}
+        </div>
+    </main>
+</body>
+
+{shouldRedirect && (
+  <script>
+    console.log('Password berhasil diubah. Mengalihkan dalam 2 detik...');
+    setTimeout(() => {
+      window.location.href = '/admin';
+    }, 2000); // 2000 milidetik = 2 detik
+  </script>
+)}
